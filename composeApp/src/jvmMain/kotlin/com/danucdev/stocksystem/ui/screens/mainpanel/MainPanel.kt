@@ -8,25 +8,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.danucdev.stocksystem.DarkFontColor
 
 @Composable
 fun MainPanel() {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Red)) {
-        Text("Panel Principal")
+    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+        Text("Panel Principal", fontSize = 32.sp, color = DarkFontColor, fontWeight = FontWeight.Bold)
     }
 }
 
 
 @Composable
 fun Canchas() {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Red)) {
-        Text("Canchas")
+    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+        Text("Canchas", fontSize = 32.sp, color = DarkFontColor, fontWeight = FontWeight.Bold)
     }
 }
 
 @Composable
 fun CuentasCorrientes() {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Red)) {
-        Text("Cuentas Corrientes")
+    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+        Text("Cuentas Corrientes", fontSize = 32.sp, color = DarkFontColor, fontWeight = FontWeight.Bold)
     }
 }

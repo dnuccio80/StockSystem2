@@ -105,7 +105,13 @@ fun NavigationWrapper() {
                     menuItemList.forEach {item ->
                         MenuItem(item, menuItemSelected) { newMenuItemSelected ->
                             menuItemSelected = newMenuItemSelected
-                            navController.navigate(newMenuItemSelected)
+                            navController.navigate(newMenuItemSelected) {
+                                popUpTo(navController.graph.startDestinationRoute!!) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
                     }
                 }
