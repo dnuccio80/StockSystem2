@@ -32,6 +32,7 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.koin.compose.viewmodel.navigation)
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.1")
+            implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
         }
 
         commonTest.dependencies {
