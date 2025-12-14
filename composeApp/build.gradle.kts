@@ -27,6 +27,11 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.koin.compose.viewmodel.navigation)
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.1")
         }
 
         commonTest.dependencies {
