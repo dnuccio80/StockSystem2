@@ -41,53 +41,7 @@ fun App() {
     MaterialTheme {
 
         KoinApplication(application = { modules() }) {
-
             NavigationWrapper()
-
-//            Box(
-//                modifier = Modifier.fillMaxSize().background(DarkAppBackground),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Row(
-//                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.spacedBy(64.dp)
-//                ) {
-//                    Card(
-//                        modifier =
-//                            Modifier
-//                                .fillMaxHeight()
-//                                .width(250.dp),
-//                        shape = RoundedCornerShape(16.dp),
-//                        colors = CardDefaults.cardColors(containerColor = CardBackgroundSecond),
-//                        elevation = CardDefaults.cardElevation(16.dp)
-//                    ) { }
-//                    Card(
-//                        modifier = Modifier.width(300.dp).height(230.dp),
-//                        colors = CardDefaults.cardColors(containerColor = DarkCardBackground),
-//                        elevation = CardDefaults.cardElevation(16.dp)
-//                    ) {
-//
-//                    }
-//                    Card(
-//                        modifier = Modifier.width(300.dp).height(230.dp),
-//                        colors = CardDefaults.cardColors(containerColor = CardBackgroundFirst),
-//                        elevation = CardDefaults.cardElevation(16.dp)
-//                    ) {
-//
-//                    }
-//
-//Card(
-//                        modifier = Modifier.width(300.dp).height(230.dp),
-//                        colors = CardDefaults.cardColors(containerColor = CardBackgroundSecond),
-//                        elevation = CardDefaults.cardElevation(16.dp)
-//                    ) {
-//
-//                    }
-//
-//
-//                }
-//            }
         }
     }
 }
