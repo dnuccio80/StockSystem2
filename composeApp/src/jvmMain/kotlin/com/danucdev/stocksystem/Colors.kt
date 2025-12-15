@@ -9,4 +9,5 @@ val DarkMenuBackground = Color(0xff121319)
 val DarkFontColor = Color(0xffffffff)
 val CardBackgroundFirst = Color(0xff1d2c3c)
 val CardBackgroundSecond = Color(0xff162936)
+val DarkAccentColorText = Color(0xffe59350)
 

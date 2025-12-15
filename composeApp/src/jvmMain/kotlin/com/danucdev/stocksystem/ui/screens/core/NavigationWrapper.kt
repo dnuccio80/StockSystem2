@@ -1,6 +1,5 @@
 package com.danucdev.stocksystem.ui.screens.core
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.hoverable
@@ -13,18 +12,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SportsTennis
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -34,15 +35,12 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
@@ -54,23 +52,28 @@ import androidx.navigation.compose.rememberNavController
 import com.danucdev.stocksystem.CardBackgroundFirst
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkAppBackground
-import com.danucdev.stocksystem.DarkCardBackground
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.ui.navigation.MenuItemData
 import com.danucdev.stocksystem.ui.navigation.Routes
-import com.danucdev.stocksystem.ui.screens.mainpanel.Canchas
-import com.danucdev.stocksystem.ui.screens.mainpanel.CuentasCorrientes
-import com.danucdev.stocksystem.ui.screens.mainpanel.MainPanel
-import org.w3c.dom.Text
+import com.danucdev.stocksystem.ui.screens.clients.ClientsScreen
+import com.danucdev.stocksystem.ui.screens.currentacounts.OpenAccountsScreen
+import com.danucdev.stocksystem.ui.screens.inventory.InventoryScreen
+import com.danucdev.stocksystem.ui.screens.mainpanel.MainPanelScreen
+import com.danucdev.stocksystem.ui.screens.tournaments.TournamentsScreen
+import com.danucdev.stocksystem.ui.screens.turns.TurnsScreen
 
 @Composable
 fun NavigationWrapper() {
 
     val navController = rememberNavController()
+
     val menuItemList = listOf(
         MenuItemData(title = "Panel Principal", icon = Icons.Filled.Home, route = Routes.MainPanel),
-        MenuItemData(title = "Canchas", icon = Icons.Filled.Image, route = Routes.Canchas),
-        MenuItemData(title = "Cuentas Corrientes", icon = Icons.Filled.AddCircle, route = Routes.CuentasCorrientes)
+        MenuItemData(title = "Turnos", icon = Icons.Filled.SportsTennis, route = Routes.Turns),
+        MenuItemData(title = "Torneos", icon = Icons.Filled.MilitaryTech, route = Routes.Tournaments),
+        MenuItemData(title = "Clientes", icon = Icons.Filled.Person, route = Routes.Clients),
+        MenuItemData(title = "Cuentas Corrientes", icon = Icons.Filled.AccountBox, route = Routes.OpenAccounts),
+        MenuItemData(title = "Inventario", icon = Icons.Filled.Fastfood, route = Routes.Inventory),
     )
 
     var menuItemSelected by remember { mutableStateOf(Routes.MainPanel.route) }
@@ -102,7 +105,7 @@ fun NavigationWrapper() {
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    menuItemList.forEach {item ->
+                    menuItemList.forEach { item ->
                         MenuItem(item, menuItemSelected) { newMenuItemSelected ->
                             menuItemSelected = newMenuItemSelected
                             navController.navigate(newMenuItemSelected) {
@@ -116,10 +119,16 @@ fun NavigationWrapper() {
                     }
                 }
             }
-            NavHost(navController = navController, startDestination = Routes.MainPanel.route) {
-                composable(Routes.MainPanel.route) { MainPanel() }
-                composable(Routes.Canchas.route) { Canchas() }
-                composable(Routes.CuentasCorrientes.route) { CuentasCorrientes() }
+            NavHost(
+                navController = navController,
+                startDestination = Routes.MainPanel.route,
+            ) {
+                composable(Routes.MainPanel.route) { MainPanelScreen() }
+                composable(Routes.Turns.route) { TurnsScreen() }
+                composable(Routes.Tournaments.route) { TournamentsScreen() }
+                composable(Routes.Clients.route) { ClientsScreen() }
+                composable(Routes.OpenAccounts.route) { OpenAccountsScreen() }
+                composable(Routes.Inventory.route) { InventoryScreen() }
             }
         }
     }
@@ -139,7 +148,11 @@ private fun MenuItem(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .background(if (menuItemSelected == itemData.route.route) DarkAppBackground.copy(alpha = .6f) else if (isHovered) CardBackgroundFirst else Color.Transparent)
+                .background(
+                    if (menuItemSelected == itemData.route.route) DarkAppBackground.copy(
+                        alpha = .6f
+                    ) else if (isHovered) CardBackgroundFirst else Color.Transparent
+                )
                 .hoverable(interactionSource)
                 .clickable { onClick(itemData.route.route) }
 
