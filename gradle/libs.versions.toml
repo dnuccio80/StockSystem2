@@ -11,6 +11,7 @@ roomCommon = "2.7.2"
 ksp = "2.2.21-2.0.4"
 androidx-sqliteBundled = "2.5.2"
 koinCore = "4.1.0"
+roomRuntimeJvm = "2.8.4"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -26,6 +27,7 @@ androidx-foundation-layout-android = { group = "androidx.compose.foundation", na
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "roomCommon" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "roomCommon" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "androidx-sqliteBundled" }
+androidx-room-runtime-jvm = { group = "androidx.room", name = "room-runtime-jvm", version.ref = "roomRuntimeJvm" }
 
 #Koin
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
