@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.application
+import com.danucdev.stocksystem.data.di.dataModule
 import com.danucdev.stocksystem.ui.screens.core.NavigationWrapper
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -40,7 +41,7 @@ import stocksystem.composeapp.generated.resources.compose_multiplatform
 fun App() {
     MaterialTheme {
 
-        KoinApplication(application = { modules() }) {
+        KoinApplication(application = { modules(dataModule) }) {
             NavigationWrapper()
         }
     }

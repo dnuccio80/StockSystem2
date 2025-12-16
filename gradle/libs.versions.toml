@@ -6,10 +6,11 @@ junit = "4.13.2"
 kotlin = "2.2.21"
 kotlinx-coroutines = "1.10.2"
 foundationLayoutAndroid = "1.10.0"
-
+#Room
 roomCommon = "2.7.2"
 ksp = "2.2.21-2.0.4"
 androidx-sqliteBundled = "2.5.2"
+
 koinCore = "4.1.0"
 roomRuntimeJvm = "2.8.4"
 
