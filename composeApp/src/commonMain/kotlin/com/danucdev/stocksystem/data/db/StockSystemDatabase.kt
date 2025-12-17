@@ -12,10 +12,10 @@ import com.danucdev.stocksystem.data.typeconverters.LocalDateTypeConverter
 
 const val DATABASE_NAME = "ss_app_database.db" // Siempre con .db
 
-//expect object StockSystemCTor : RoomDatabaseConstructor<StockSystemDatabase>
+expect object StockSystemCTor : RoomDatabaseConstructor<StockSystemDatabase>
 
 @Database(entities = [ClientEntity::class], version = 1)
-//@ConstructedBy(StockSystemCTor::class)
+@ConstructedBy(StockSystemCTor::class)
 @TypeConverters(LocalDateTypeConverter::class)
 abstract class StockSystemDatabase:RoomDatabase() {
     abstract fun clientDao():ClientDao
