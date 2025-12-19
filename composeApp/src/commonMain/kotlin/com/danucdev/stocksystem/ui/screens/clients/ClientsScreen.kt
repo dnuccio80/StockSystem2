@@ -37,6 +37,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+- Cerimport androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -148,16 +150,23 @@ fun ClientsScreen() {
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                clientsList.forEach { client ->
-                    ClientItem(
-                        client = client,
-                        onDeleteClient = { viewmodel.deleteClientData(client.id) },
-                        onModifyClient = {
-                            viewmodel.assignClientData(client)
-                            viewmodel.showEditClientDialog(true)
-                        }
-                    )
+                if (clientsList.isNotEmpty()) {
+                    clientsList.forEach { client ->
+                        ClientItem(
+                            client = client,
+                            onDeleteClient = { viewmodel.deleteClientData(client.id) },
+                            onModifyClient = {
+                                viewmodel.assignClientData(client)
+                                viewmodel.showEditClientDialog(true)
+                            }
+                        )
+                    }
+                }else  {
+                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)){
+                        CardBody("No hay clientes para mostrar")
+                    }
                 }
+
             }
             // Add new client
             if (showAddClientDialog) {
@@ -206,7 +215,10 @@ fun ClientsScreen() {
                                 value
                             )
                             ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
-                            ClientDataActions.DISMISS -> viewmodel.showEditClientDialog(false)
+                            ClientDataActions.DISMISS -> {
+                                viewmodel.showEditClientDialog(false)
+                                viewmodel.cleanDialogData()
+                            }
                             ClientDataActions.ADD_CLIENT -> { }
                             ClientDataActions.UPDATE_DATA -> {
                                 viewmodel.showEditClientDialog(false)
@@ -352,6 +364,12 @@ private fun ClientDialog(
     )
     var showError by remember { mutableStateOf(false) }
 
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     Dialog(
         onDismissRequest = { onActionDone(ClientDataActions.DISMISS, "") },
     ) {
@@ -373,7 +391,7 @@ private fun ClientDialog(
                     CardTitle(if(editDialog) "Editar Cliente" else "Agregar Cliente")
                 }
                 Spacer(modifier = Modifier.size(0.dp))
-                TextFieldItem(clientName, label = "Nombre", onClick = {}) { input ->
+                TextFieldItem(clientName, label = "Nombre", focusRequester = focusRequester, onClick = {}) { input ->
                     val newInput = input.replaceFirstChar { char ->
                         if (char.isLowerCase()) char.titlecase() else char.toString()
                     }

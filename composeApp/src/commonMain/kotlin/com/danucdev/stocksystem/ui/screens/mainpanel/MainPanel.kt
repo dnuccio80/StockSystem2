@@ -53,10 +53,16 @@ fun MainPanelScreen() {
             FloatingCardItem("Turnos libres del día") {
                 RowCardItem("Libres en cancha 1", "3 turnos")
                 RowCardItem("Libres en cancha 2", "5 turnos")
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    ButtonTextItem("Ver turnos libres") {  }
+                }
             }
             FloatingCardItem("Cuentas Corrientes") {
                 AccentText("$580.000", color = DarkAccentColorText)
                 RowCardItem("Cuentas corrientes activas:", "33 cuentas")
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                    ButtonTextItem("Ver cuentas corrientes") {  }
+                }
             }
         }
     }

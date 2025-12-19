@@ -17,6 +17,8 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -68,6 +70,7 @@ fun AccentText(text: String, color: Color = Color.Green.copy(.6f)) {
 fun TextFieldItem(
     value: String,
     enabled: Boolean = true,
+    focusRequester:FocusRequester? = null,
     label: String,
     clickable: Boolean = false,
     onClick: () -> Unit,
@@ -84,7 +87,10 @@ fun TextFieldItem(
                     PointerIcon.Default,
                     overrideDescendants = true
                 )
-            } else {
+            } else if(focusRequester != null) {
+                Modifier.fillMaxWidth().focusRequester(focusRequester)
+            }
+            else {
                 Modifier.fillMaxWidth()
             },
         shape = RoundedCornerShape(4.dp),

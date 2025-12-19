@@ -59,7 +59,6 @@ class ClientsViewModel(
     private val _allClients = queryClientName.debounce(300).flatMapLatest { query ->
         getAllClients(query)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
     val allClients = _allClients
 
     fun modifyClientName(newValue: String) {
