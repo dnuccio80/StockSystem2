@@ -10,7 +10,7 @@ import java.time.LocalDate
 @Entity
 data class ClientEntity(
     @PrimaryKey(autoGenerate = true)
-    val id:Int = 0,
+    val id:Int,
     val name:String,
     val phone:String,
     @TypeConverters(LocalDateTypeConverter::class) val birthDate: LocalDate

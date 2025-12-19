@@ -8,11 +8,13 @@ import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.usecases.DeleteClient
 import com.danucdev.stocksystem.domain.usecases.GetAllClients
 import com.danucdev.stocksystem.domain.usecases.UpdateClientData
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.core.logger.Logger
 import java.time.LocalDate
 
 class ClientsViewModel(
@@ -23,6 +25,8 @@ class ClientsViewModel(
 
 ) :
     ViewModel() {
+
+    private val _clientId = MutableStateFlow(0)
 
     private val _clientName = MutableStateFlow("")
     val clientName: StateFlow<String> = _clientName
@@ -38,6 +42,9 @@ class ClientsViewModel(
 
     private val _showAddClientDialog = MutableStateFlow(false)
     val showAddClientDialog: StateFlow<Boolean> = _showAddClientDialog
+
+    private val _showEditClientDialog = MutableStateFlow(false)
+    val showEditClientDialog: StateFlow<Boolean> = _showEditClientDialog
 
     private val _allClients = getAllClients().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val allClients = _allClients
@@ -58,6 +65,10 @@ class ClientsViewModel(
         _showAddClientDialog.value = show
     }
 
+    fun showEditClientDialog(show: Boolean) {
+        _showEditClientDialog.value = show
+    }
+
     fun modifyBirthDate(newValue:LocalDate) {
         _birthDate.value = newValue
     }
@@ -75,11 +86,44 @@ class ClientsViewModel(
         }
     }
 
+    fun deleteClientData(clientId:Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteClient(clientId)
+        }
+    }
+
     fun cleanDialogData() {
         _clientName.value = ""
         _clientLastName.value = ""
         _phoneNumber.value = ""
         _birthDate.value = null
+    }
+
+    fun assignClientData(client:ClientModel) {
+
+        val name = client.name.substringBefore(" ")
+        val lastName = client.name.substringAfter(" ")
+
+        _clientId.value = client.id
+        _clientName.value = name
+        _clientLastName.value = lastName
+        _phoneNumber.value = client.phone
+        _birthDate.value = client.birthDate
+
+        println(_clientId.value)
+    }
+
+    fun updateClient() {
+        val clientData = ClientModel(
+            id = _clientId.value,
+            name = _clientName.value + " " + _clientLastName.value,
+            phone = _phoneNumber.value,
+            birthDate = _birthDate.value!!
+        )
+
+        viewModelScope.launch(Dispatchers.IO) {
+            updateClientData(clientData)
+        }
     }
 
     fun isAllData():Boolean{

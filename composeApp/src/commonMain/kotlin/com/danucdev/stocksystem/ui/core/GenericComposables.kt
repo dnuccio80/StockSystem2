@@ -2,12 +2,16 @@ package com.danucdev.stocksystem.ui.core
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -19,6 +23,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
@@ -98,6 +103,27 @@ fun TextFieldItem(
         enabled = enabled,
         label = { CardBody(label) }
     )
+}
+
+@Composable
+fun ConfirmDialog(text: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = { onDismiss() }) {
+        Card(shape = RoundedCornerShape(4.dp), colors = CardDefaults.cardColors(containerColor = DarkMenuBackground)) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                CardBody(text)
+                AcceptDeclineButtons(
+                    acceptButtonColor = Color.Red.copy(alpha = .6f),
+                    acceptText = "Eliminar",
+                    onAcceptButtonClick = { onConfirm() },
+                    onDeclineButtonClick = { onDismiss() }
+                )
+            }
+        }
+    }
 }
 
 @Composable

@@ -1,9 +1,6 @@
 package com.danucdev.stocksystem.domain.models
 
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
 import com.danucdev.stocksystem.data.entities.ClientEntity
-import com.danucdev.stocksystem.data.typeconverters.LocalDateTypeConverter
 import java.time.LocalDate
 
 data class ClientModel(

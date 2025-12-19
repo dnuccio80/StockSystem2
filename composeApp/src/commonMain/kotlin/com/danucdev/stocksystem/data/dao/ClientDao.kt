@@ -18,10 +18,10 @@ interface ClientDao {
     fun getAllClients():Flow<List<ClientEntity>>
 
     @Query("DELETE FROM CLIENTENTITY WHERE id = :clientId")
-    fun deleteClient(clientId:Int)
+    suspend fun deleteClient(clientId:Int)
 
-    @Update(onConflict = OnConflictStrategy.REPLACE)
-    fun updateClientData(client: ClientEntity)
+    @Update
+    suspend fun updateClientData(client: ClientEntity)
 
 
 }
