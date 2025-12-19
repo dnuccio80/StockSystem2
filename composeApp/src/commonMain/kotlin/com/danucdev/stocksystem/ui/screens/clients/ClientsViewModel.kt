@@ -2,9 +2,8 @@ package com.danucdev.stocksystem.ui.screens.clients
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.danucdev.stocksystem.data.RepositoryImpl
-import com.danucdev.stocksystem.domain.usecases.AddClient
 import com.danucdev.stocksystem.domain.models.ClientModel
+import com.danucdev.stocksystem.domain.usecases.AddClient
 import com.danucdev.stocksystem.domain.usecases.DeleteClient
 import com.danucdev.stocksystem.domain.usecases.GetAllClients
 import com.danucdev.stocksystem.domain.usecases.UpdateClientData
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.koin.core.logger.Logger
 import java.time.LocalDate
 
 class ClientsViewModel(
@@ -28,6 +26,9 @@ class ClientsViewModel(
 
     private val _clientId = MutableStateFlow(0)
 
+    private val _queryClientName = MutableStateFlow("")
+    val queryClientName:StateFlow<String> = _queryClientName
+
     private val _clientName = MutableStateFlow("")
     val clientName: StateFlow<String> = _clientName
 
@@ -40,8 +41,12 @@ class ClientsViewModel(
     private val _birthDate = MutableStateFlow<LocalDate?>(null)
     val birthDate:StateFlow<LocalDate?> = _birthDate
 
+    private val _showBirthdayDialog = MutableStateFlow(false)
+    val showBirthdayDialog: StateFlow<Boolean> = _showBirthdayDialog
+
     private val _showAddClientDialog = MutableStateFlow(false)
     val showAddClientDialog: StateFlow<Boolean> = _showAddClientDialog
+
 
     private val _showEditClientDialog = MutableStateFlow(false)
     val showEditClientDialog: StateFlow<Boolean> = _showEditClientDialog
@@ -69,8 +74,16 @@ class ClientsViewModel(
         _showEditClientDialog.value = show
     }
 
+    fun updateShowBirthdayDialog(show: Boolean) {
+        _showBirthdayDialog.value = show
+    }
+
     fun modifyBirthDate(newValue:LocalDate) {
         _birthDate.value = newValue
+    }
+
+    fun modifyQueryClientName(newValue:String) {
+        _queryClientName.value = newValue
     }
 
     fun addNewClient() {
@@ -110,7 +123,6 @@ class ClientsViewModel(
         _phoneNumber.value = client.phone
         _birthDate.value = client.birthDate
 
-        println(_clientId.value)
     }
 
     fun updateClient() {

@@ -80,10 +80,9 @@ fun ClientsScreen() {
     val showEditClientDialog by viewmodel.showEditClientDialog.collectAsState()
     val clientsList by viewmodel.allClients.collectAsState()
     val birthDate by viewmodel.birthDate.collectAsState()
+    val queryClientName by viewmodel.queryClientName.collectAsState()
+    val showBirthdayDialog by viewmodel.showBirthdayDialog.collectAsState()
 
-    var queryName by remember { mutableStateOf("") }
-
-    var showBirthdayDialog by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
         Column(
@@ -100,23 +99,23 @@ fun ClientsScreen() {
             }
             Spacer(modifier = Modifier.size(0.dp))
             TextField(
-                value = queryName,
+                value = queryClientName,
                 onValueChange = { input ->
                     val newInput = input.replaceFirstChar { char ->
                         if (char.isLowerCase()) char.titlecase() else char.toString()
                     }
-                    queryName = newInput
+                    viewmodel.modifyQueryClientName(newInput)
                 },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                 shape = RoundedCornerShape(4.dp),
                 trailingIcon = {
-                    if (queryName.isNotBlank()) {
+                    if (queryClientName.isNotBlank()) {
                         Icon(
                             Icons.Filled.Close,
                             contentDescription = "",
                             modifier = Modifier
                                 .clickable {
-                                    queryName = ""
+                                    viewmodel.modifyQueryClientName("")
                                 }
                                 .pointerHoverIcon(
                                     PointerIcon.Default
@@ -169,7 +168,7 @@ fun ClientsScreen() {
                     birthday = birthDate,
                     phoneNumber = phoneNumber,
                     isAllData = viewmodel.isAllData(),
-                    onBirthdayClicked = { showBirthdayDialog = true },
+                    onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
                     onActionDone = { action, value ->
                         when (action) {
                             ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
@@ -199,7 +198,7 @@ fun ClientsScreen() {
                     birthday = birthDate,
                     phoneNumber = phoneNumber,
                     isAllData = viewmodel.isAllData(),
-                    onBirthdayClicked = { showBirthdayDialog = true },
+                    onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
                     onActionDone = { action, value ->
                         when (action) {
                             ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
@@ -221,7 +220,7 @@ fun ClientsScreen() {
             BirthdayDatePicker(showBirthdayDialog, onDateSelected = { selected ->
                 viewmodel.modifyBirthDate(selected)
             }) {
-                showBirthdayDialog = false
+                viewmodel.updateShowBirthdayDialog(false)
             }
         }
     }
@@ -371,7 +370,7 @@ private fun ClientDialog(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CardTitle("Agregar Cliente")
+                    CardTitle(if(editDialog) "Editar Cliente" else "Agregar Cliente")
                 }
                 Spacer(modifier = Modifier.size(0.dp))
                 TextFieldItem(clientName, label = "Nombre", onClick = {}) { input ->
