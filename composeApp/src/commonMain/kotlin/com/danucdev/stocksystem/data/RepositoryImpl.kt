@@ -1,7 +1,6 @@
 package com.danucdev.stocksystem.data
 
 import com.danucdev.stocksystem.data.db.StockSystemDatabase
-import com.danucdev.stocksystem.data.entities.ClientEntity
 import com.danucdev.stocksystem.domain.Repository
 import com.danucdev.stocksystem.domain.models.ClientModel
 import kotlinx.coroutines.flow.Flow
@@ -20,5 +19,13 @@ class RepositoryImpl(private val db: StockSystemDatabase):Repository {
         val clientEntity = client.toEntity()
 
         db.clientDao().addClient(clientEntity)
+    }
+
+    override suspend fun deleteClient(clientId: Int) {
+        db.clientDao().deleteClient(clientId)
+    }
+
+    override suspend fun updateClientData(client: ClientModel) {
+        db.clientDao().updateClientData(client.toEntity())
     }
 }

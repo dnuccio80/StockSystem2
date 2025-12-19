@@ -5,7 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.danucdev.stocksystem.data.RepositoryImpl
 import com.danucdev.stocksystem.domain.usecases.AddClient
 import com.danucdev.stocksystem.domain.models.ClientModel
+import com.danucdev.stocksystem.domain.usecases.DeleteClient
 import com.danucdev.stocksystem.domain.usecases.GetAllClients
+import com.danucdev.stocksystem.domain.usecases.UpdateClientData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class ClientsViewModel(private val addClient: AddClient, getAllClients: GetAllClients) :
+class ClientsViewModel(
+    private val addClient: AddClient,
+    getAllClients: GetAllClients,
+    private val deleteClient: DeleteClient,
+    private val updateClientData: UpdateClientData
+
+) :
     ViewModel() {
 
     private val _clientName = MutableStateFlow("")
@@ -63,7 +71,6 @@ class ClientsViewModel(private val addClient: AddClient, getAllClients: GetAllCl
         )
 
         viewModelScope.launch {
-//            repository.addClient(newClient)
             addClient(newClient)
         }
     }
@@ -73,6 +80,10 @@ class ClientsViewModel(private val addClient: AddClient, getAllClients: GetAllCl
         _clientLastName.value = ""
         _phoneNumber.value = ""
         _birthDate.value = null
+    }
+
+    fun isAllData():Boolean{
+        return _clientName.value.isNotBlank() && _clientLastName.value.isNotBlank() && _phoneNumber.value.isNotBlank() && _birthDate.value != null
     }
 
 }

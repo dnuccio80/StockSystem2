@@ -7,4 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface Repository {
     fun getAllClients(): Flow<List<ClientModel>>
     suspend fun addClient(client:ClientModel)
+    suspend fun deleteClient(clientId:Int)
+    suspend fun updateClientData(client: ClientModel)
 }

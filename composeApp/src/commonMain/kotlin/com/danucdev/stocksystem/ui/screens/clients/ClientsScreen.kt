@@ -1,5 +1,6 @@
 package com.danucdev.stocksystem.ui.screens.clients
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -40,6 +42,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,6 +51,7 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.danucdev.stocksystem.CardBackgroundFirst
 import com.danucdev.stocksystem.CardBackgroundSecond
@@ -60,6 +64,7 @@ import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 import com.danucdev.stocksystem.ui.core.TextFieldItem
+import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.LocalDate
 import java.time.ZoneId
@@ -260,6 +265,7 @@ private fun AddClientDialog(
         "dd/MM/yyyy",
         Locale.getDefault()
     )
+    var showError by remember { mutableStateOf(false) }
 
     Dialog(
         onDismissRequest = { onDismiss() },
@@ -298,8 +304,8 @@ private fun AddClientDialog(
                     if (input.isBlank()) {
                         viewmodel.modifyPhoneNumber(input)
                     }
-                    input.filter { it.isDigit() }
-                    viewmodel.modifyPhoneNumber(input)
+                    val newInput = input.filter { it.isDigit() }
+                    viewmodel.modifyPhoneNumber(newInput)
                 }
                 TextFieldItem(
                     birthday?.format(dateFormatter)?:"",
@@ -316,13 +322,20 @@ private fun AddClientDialog(
                     AcceptDeclineButtons(
                         acceptButtonColor = Color.Green.copy(alpha = .6f),
                         onAcceptButtonClick = {
-                            viewmodel.showAddClientDialog(false)
-                            // Add Client if it is all right
-                            viewmodel.addNewClient()
-                            viewmodel.cleanDialogData()
+                            if(viewmodel.isAllData()) {
+                                showError = false
+                                viewmodel.showAddClientDialog(false)
+                                viewmodel.addNewClient()
+                                viewmodel.cleanDialogData()
+                            } else {
+                                showError = true
+                            }
                         },
                         onDeclineButtonClick = { viewmodel.showAddClientDialog(false) }
                     )
+                }
+                AnimatedVisibility(visible = showError) {
+                    Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
                 }
             }
         }

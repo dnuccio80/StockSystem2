@@ -2,7 +2,9 @@ package com.danucdev.stocksystem.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.danucdev.stocksystem.data.entities.ClientEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -14,6 +16,12 @@ interface ClientDao {
 
     @Query("SELECT * FROM CLIENTENTITY order by name ASC")
     fun getAllClients():Flow<List<ClientEntity>>
+
+    @Query("DELETE FROM CLIENTENTITY WHERE id = :clientId")
+    fun deleteClient(clientId:Int)
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun updateClientData(client: ClientEntity)
 
 
 }
