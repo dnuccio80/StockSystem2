@@ -10,5 +10,8 @@ fun getDataBase(): StockSystemDatabase {
     return Room.databaseBuilder<StockSystemDatabase>(name = dbFile.absolutePath)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
+        .fallbackToDestructiveMigration(
+            dropAllTables = true
+        )
         .build()
 }

@@ -12,7 +12,7 @@ interface ClientDao {
     @Insert
     suspend fun addClient(client:ClientEntity)
 
-    @Query("SELECT * FROM CLIENTENTITY order by name DESC")
+    @Query("SELECT * FROM CLIENTENTITY order by name ASC")
     fun getAllClients():Flow<List<ClientEntity>>
 
 

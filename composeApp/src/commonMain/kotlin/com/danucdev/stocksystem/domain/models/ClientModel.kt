@@ -9,7 +9,7 @@ import java.time.LocalDate
 data class ClientModel(
     val id:Int = 0,
     val name:String,
-    val phone:Double,
+    val phone:String,
     val birthDate: LocalDate
 ) {
     fun toEntity(): ClientEntity {

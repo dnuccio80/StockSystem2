@@ -12,7 +12,7 @@ data class ClientEntity(
     @PrimaryKey(autoGenerate = true)
     val id:Int = 0,
     val name:String,
-    val phone:Double,
+    val phone:String,
     @TypeConverters(LocalDateTypeConverter::class) val birthDate: LocalDate
 ) {
     fun toDomain():ClientModel{
