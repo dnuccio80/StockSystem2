@@ -104,7 +104,7 @@ fun ClientsScreen() {
                     val newInput = input.replaceFirstChar { char ->
                         if (char.isLowerCase()) char.titlecase() else char.toString()
                     }
-                    viewmodel.modifyQueryClientName(newInput)
+                    viewmodel.updateQueryClientName(newInput)
                 },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
                 shape = RoundedCornerShape(4.dp),
@@ -115,7 +115,7 @@ fun ClientsScreen() {
                             contentDescription = "",
                             modifier = Modifier
                                 .clickable {
-                                    viewmodel.modifyQueryClientName("")
+                                    viewmodel.updateQueryClientName("")
                                 }
                                 .pointerHoverIcon(
                                     PointerIcon.Default
@@ -319,7 +319,7 @@ fun ClientItem(client: ClientModel, onDeleteClient: () -> Unit, onModifyClient: 
         }
         if (showConfirmDeleteClientDialog) {
             ConfirmDialog(
-                "¿Estás seguro que querés eliminar a este cliente?",
+                "¿Seguro que querés eliminar a este cliente?",
                 onConfirm = {
                     onDeleteClient()
                     showConfirmDeleteClientDialog = false

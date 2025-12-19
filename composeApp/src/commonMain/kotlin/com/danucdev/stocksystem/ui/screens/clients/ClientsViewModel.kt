@@ -8,9 +8,13 @@ import com.danucdev.stocksystem.domain.usecases.DeleteClient
 import com.danucdev.stocksystem.domain.usecases.GetAllClients
 import com.danucdev.stocksystem.domain.usecases.UpdateClientData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -51,7 +55,11 @@ class ClientsViewModel(
     private val _showEditClientDialog = MutableStateFlow(false)
     val showEditClientDialog: StateFlow<Boolean> = _showEditClientDialog
 
-    private val _allClients = getAllClients().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    private val _allClients = queryClientName.debounce(300).flatMapLatest { query ->
+        getAllClients(query)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     val allClients = _allClients
 
     fun modifyClientName(newValue: String) {
@@ -82,7 +90,7 @@ class ClientsViewModel(
         _birthDate.value = newValue
     }
 
-    fun modifyQueryClientName(newValue:String) {
+    fun updateQueryClientName(newValue:String) {
         _queryClientName.value = newValue
     }
 

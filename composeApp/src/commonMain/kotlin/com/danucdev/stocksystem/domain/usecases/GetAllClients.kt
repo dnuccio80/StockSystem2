@@ -5,5 +5,12 @@ import com.danucdev.stocksystem.domain.models.ClientModel
 import kotlinx.coroutines.flow.Flow
 
 class GetAllClients(private val repository: RepositoryImpl) {
-    operator fun invoke(): Flow<List<ClientModel>> = repository.getAllClients()
+    operator fun invoke(query: String): Flow<List<ClientModel>> {
+        return if (query.isBlank()) {
+            repository.getAllClients()
+        } else {
+            repository.getClientsByQuery(query)
+        }
+
+    }
 }

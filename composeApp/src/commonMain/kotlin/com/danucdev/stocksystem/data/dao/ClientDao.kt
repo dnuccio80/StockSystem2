@@ -23,5 +23,8 @@ interface ClientDao {
     @Update
     suspend fun updateClientData(client: ClientEntity)
 
+    @Query("SELECT * FROM ClientEntity WHERE name LIKE '%' || :query || '%' ")
+    fun getClientsByQuery(query:String):Flow<List<ClientEntity>>
+
 
 }

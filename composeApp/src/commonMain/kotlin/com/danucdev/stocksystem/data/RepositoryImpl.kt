@@ -6,7 +6,7 @@ import com.danucdev.stocksystem.domain.models.ClientModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class RepositoryImpl(private val db: StockSystemDatabase):Repository {
+class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
     override fun getAllClients(): Flow<List<ClientModel>> {
         return db.clientDao().getAllClients().map { list ->
             list.map { client ->
@@ -27,5 +27,11 @@ class RepositoryImpl(private val db: StockSystemDatabase):Repository {
 
     override suspend fun updateClientData(client: ClientModel) {
         db.clientDao().updateClientData(client.toEntity())
+    }
+
+    override fun getClientsByQuery(query: String): Flow<List<ClientModel>> {
+        return db.clientDao().getClientsByQuery(query).map { list ->
+            list.map { client -> client.toDomain() }
+        }
     }
 }
