@@ -3,10 +3,14 @@ package com.danucdev.stocksystem.data
 import com.danucdev.stocksystem.data.db.StockSystemDatabase
 import com.danucdev.stocksystem.domain.Repository
 import com.danucdev.stocksystem.domain.models.ClientModel
+import com.danucdev.stocksystem.domain.models.ConcessionModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
+
+    // Clients
+
     override fun getAllClients(): Flow<List<ClientModel>> {
         return db.clientDao().getAllClients().map { list ->
             list.map { client ->
@@ -33,5 +37,17 @@ class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
         return db.clientDao().getClientsByQuery(query).map { list ->
             list.map { client -> client.toDomain() }
         }
+    }
+
+    // Concessions
+
+    override fun getAllConcessions(): Flow<List<ConcessionModel>> {
+        return db.concessionDao().getAllConcessions().map { list ->
+            list.map { concession -> concession.toDomain() }
+        }
+    }
+
+    override suspend fun addConcession(concession: ConcessionModel) {
+        db.concessionDao().addConcession(concession.toEntity())
     }
 }

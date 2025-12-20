@@ -3,10 +3,10 @@ package com.danucdev.stocksystem.ui.screens.clients
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.danucdev.stocksystem.domain.models.ClientModel
-import com.danucdev.stocksystem.domain.usecases.AddClient
-import com.danucdev.stocksystem.domain.usecases.DeleteClient
-import com.danucdev.stocksystem.domain.usecases.GetAllClients
-import com.danucdev.stocksystem.domain.usecases.UpdateClientData
+import com.danucdev.stocksystem.domain.usecases.clients.AddClient
+import com.danucdev.stocksystem.domain.usecases.clients.DeleteClient
+import com.danucdev.stocksystem.domain.usecases.clients.GetAllClients
+import com.danucdev.stocksystem.domain.usecases.clients.UpdateClientData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

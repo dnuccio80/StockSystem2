@@ -57,7 +57,7 @@ import com.danucdev.stocksystem.ui.navigation.MenuItemData
 import com.danucdev.stocksystem.ui.navigation.Routes
 import com.danucdev.stocksystem.ui.screens.clients.ClientsScreen
 import com.danucdev.stocksystem.ui.screens.currentacounts.OpenAccountsScreen
-import com.danucdev.stocksystem.ui.screens.inventory.InventoryScreen
+import com.danucdev.stocksystem.ui.screens.concessions.ConcessionScreen
 import com.danucdev.stocksystem.ui.screens.mainpanel.MainPanelScreen
 import com.danucdev.stocksystem.ui.screens.tournaments.TournamentsScreen
 import com.danucdev.stocksystem.ui.screens.turns.TurnsScreen
@@ -128,7 +128,7 @@ fun NavigationWrapper() {
                 composable(Routes.Tournaments.route) { TournamentsScreen() }
                 composable(Routes.Clients.route) { ClientsScreen() }
                 composable(Routes.OpenAccounts.route) { OpenAccountsScreen() }
-                composable(Routes.Inventory.route) { InventoryScreen() }
+                composable(Routes.Inventory.route) { ConcessionScreen() }
             }
         }
     }

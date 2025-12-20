@@ -1,4 +1,4 @@
-package com.danucdev.stocksystem.domain.usecases
+package com.danucdev.stocksystem.domain.usecases.clients
 
 import com.danucdev.stocksystem.data.RepositoryImpl
 
