@@ -3,6 +3,7 @@ package com.danucdev.stocksystem.domain
 import com.danucdev.stocksystem.data.entities.ClientEntity
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.ConcessionModel
+import com.danucdev.stocksystem.domain.models.CurrentAccountModel
 import kotlinx.coroutines.flow.Flow
 
 interface Repository {
@@ -20,5 +21,12 @@ interface Repository {
     suspend fun updateConcession(concession: ConcessionModel)
     suspend fun deleteConcession(concessionId:Int)
     fun getConcessionByQuery(query: String):Flow<List<ConcessionModel>>
+
+    // Current Accounts
+    fun getAllCurrentAccounts(): Flow<List<CurrentAccountModel>>
+    suspend fun addCurrentAccount(currentAccount: CurrentAccountModel)
+    suspend fun updateCurrentAccount(currentAccount: CurrentAccountModel)
+    suspend fun deleteCurrentAccount(currentAccountId: Int)
+    fun getCurrentAccountsByQuery(query:String): Flow<List<CurrentAccountModel>>
 
 }

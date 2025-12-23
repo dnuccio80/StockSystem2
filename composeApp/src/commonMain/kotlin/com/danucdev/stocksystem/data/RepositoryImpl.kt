@@ -4,6 +4,7 @@ import com.danucdev.stocksystem.data.db.StockSystemDatabase
 import com.danucdev.stocksystem.domain.Repository
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.ConcessionModel
+import com.danucdev.stocksystem.domain.models.CurrentAccountModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -62,6 +63,36 @@ class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
     override fun getConcessionByQuery(query: String): Flow<List<ConcessionModel>> {
         return db.concessionDao().getConcessionByQuery(query).map { list ->
             list.map { concession -> concession.toDomain() }
+        }
+    }
+
+    // Current Accounts
+
+    override fun getAllCurrentAccounts(): Flow<List<CurrentAccountModel>> {
+        return db.currentAccountDao().getAllCurrentAccounts().map { list ->
+            list.map { currentAccount ->
+                currentAccount.toDomain()
+            }
+        }
+    }
+
+    override suspend fun addCurrentAccount(currentAccount: CurrentAccountModel) {
+        db.currentAccountDao().addCurrentAccount(currentAccount.toEntity())
+    }
+
+    override suspend fun updateCurrentAccount(currentAccount: CurrentAccountModel) {
+        db.currentAccountDao().updateCurrentAccount(currentAccount.toEntity())
+    }
+
+    override suspend fun deleteCurrentAccount(currentAccountId: Int) {
+        db.currentAccountDao().deleteCurrentAccount(currentAccountId)
+    }
+
+    override fun getCurrentAccountsByQuery(query: String): Flow<List<CurrentAccountModel>> {
+        return db.currentAccountDao().getCurrentAccountByQuery(query).map { list ->
+            list.map { currentAccount ->
+                currentAccount.toDomain()
+            }
         }
     }
 }

@@ -18,7 +18,7 @@ fun OpenAccountsScreen() {
     Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
         Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
             ScreenTitle("Cuentas Corrientes")
-            ButtonTextItem("Crear cuenta corriente") {}
+            ButtonTextItem("Nueva cuenta corriente") {}
         }
     }
 }
