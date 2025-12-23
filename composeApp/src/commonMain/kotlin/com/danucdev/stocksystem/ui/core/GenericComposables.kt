@@ -4,8 +4,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -113,6 +115,27 @@ fun TextFieldItem(
         enabled = enabled,
         label = { CardBody(label) }
     )
+}
+
+@Composable
+fun TitleAndButtonRowItemScreen(title:String, buttonText:String, onButtonClick:() -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+        ScreenTitle(title)
+        ButtonTextItem(buttonText) { onButtonClick() }
+    }
+}
+
+@Composable
+fun TitleAndButtonRowItemScreenWithSearchBar(title:String, buttonText:String, onButtonClick:() -> Unit, query:String, onSearchValueChange:(String) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        TitleAndButtonRowItemScreen(title, buttonText) { onButtonClick() }
+        Spacer(modifier = Modifier.size(0.dp))
+        SearchBarItem(query) { onSearchValueChange(it) }
+        Spacer(modifier = Modifier.size(0.dp))
+    }
 }
 
 @Composable

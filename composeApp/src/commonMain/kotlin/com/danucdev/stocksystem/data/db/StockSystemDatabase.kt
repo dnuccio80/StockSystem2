@@ -10,6 +10,7 @@ import com.danucdev.stocksystem.data.dao.ConcessionDao
 import com.danucdev.stocksystem.data.dao.CurrentAccountDao
 import com.danucdev.stocksystem.data.entities.ClientEntity
 import com.danucdev.stocksystem.data.entities.ConcessionEntity
+import com.danucdev.stocksystem.data.entities.CurrentAccountEntity
 import com.danucdev.stocksystem.data.typeconverters.LocalDateTypeConverter
 
 
@@ -17,7 +18,7 @@ const val DATABASE_NAME = "ss_app_database.db" // Siempre con .db
 
 expect object StockSystemCTor : RoomDatabaseConstructor<StockSystemDatabase>
 
-@Database(entities = [ClientEntity::class, ConcessionEntity::class, CurrentAccountDao::class], version = 5)
+@Database(entities = [ClientEntity::class, ConcessionEntity::class, CurrentAccountEntity::class], version = 5)
 @ConstructedBy(StockSystemCTor::class)
 @TypeConverters(LocalDateTypeConverter::class)
 abstract class StockSystemDatabase:RoomDatabase() {

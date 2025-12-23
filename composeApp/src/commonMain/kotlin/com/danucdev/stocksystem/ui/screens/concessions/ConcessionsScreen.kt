@@ -56,6 +56,7 @@ import com.danucdev.stocksystem.ui.core.ConfirmDialog
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 import com.danucdev.stocksystem.ui.core.SearchBarItem
 import com.danucdev.stocksystem.ui.core.TextFieldItem
+import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
 import com.danucdev.stocksystem.ui.screens.clients.ClientDataActions
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -80,17 +81,13 @@ fun ConcessionScreen() {
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ScreenTitle("Inventario")
-                ButtonTextItem("Agregar artículo") { viewmodel.updateShowAddArticleDialog() }
-            }
-            Spacer(modifier = Modifier.size(0.dp))
-            SearchBarItem(query) { viewmodel.updateQuery(it) }
-            Spacer(modifier = Modifier.size(0.dp))
+            TitleAndButtonRowItemScreenWithSearchBar(
+                title = "Inventario",
+                buttonText = "Agregar artículo",
+                onButtonClick = { viewmodel.updateShowAddArticleDialog() },
+                query = query,
+                onSearchValueChange = { viewmodel.updateQuery(it) }
+            )
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.verticalScroll(

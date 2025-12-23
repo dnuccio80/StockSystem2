@@ -64,6 +64,8 @@ import com.danucdev.stocksystem.ui.core.ConfirmDialog
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 import com.danucdev.stocksystem.ui.core.SearchBarItem
 import com.danucdev.stocksystem.ui.core.TextFieldItem
+import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreen
+import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.Instant
 import java.time.LocalDate
@@ -92,17 +94,20 @@ fun ClientsScreen() {
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                ScreenTitle("Clientes")
-                ButtonTextItem("Agregar Cliente") { viewmodel.showAddClientDialog(true) }
-            }
-            Spacer(modifier = Modifier.size(0.dp))
-            SearchBarItem(queryClientName) { viewmodel.updateQueryClientName(it) }
-            Spacer(modifier = Modifier.size(0.dp))
+            TitleAndButtonRowItemScreenWithSearchBar(
+                title = "Clientes",
+                buttonText = "Agregar Cliente",
+                onButtonClick = { viewmodel.showAddClientDialog(true) },
+                query = queryClientName,
+                onSearchValueChange = { viewmodel.updateQueryClientName(it) }
+            )
+//            TitleAndButtonRowItemScreen(
+//                "Clientes",
+//                "Agregar Cliente"
+//            ) { viewmodel.showAddClientDialog(true) }
+//            Spacer(modifier = Modifier.size(0.dp))
+//            SearchBarItem(queryClientName) { viewmodel.updateQueryClientName(it) }
+//            Spacer(modifier = Modifier.size(0.dp))
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -118,8 +123,8 @@ fun ClientsScreen() {
                             }
                         )
                     }
-                }else  {
-                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)){
+                } else {
+                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)) {
                         CardBody("No hay clientes para mostrar")
                     }
                 }
@@ -150,7 +155,7 @@ fun ClientsScreen() {
                                 viewmodel.cleanDialogData()
                             }
 
-                            ClientDataActions.UPDATE_DATA -> { }
+                            ClientDataActions.UPDATE_DATA -> {}
                         }
                     }
                 )
@@ -171,12 +176,14 @@ fun ClientsScreen() {
                             ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
                                 value
                             )
+
                             ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
                             ClientDataActions.DISMISS -> {
                                 viewmodel.showEditClientDialog(false)
                                 viewmodel.cleanDialogData()
                             }
-                            ClientDataActions.ADD_CLIENT -> { }
+
+                            ClientDataActions.ADD_CLIENT -> {}
                             ClientDataActions.UPDATE_DATA -> {
                                 viewmodel.showEditClientDialog(false)
                                 viewmodel.updateClient()
@@ -194,7 +201,6 @@ fun ClientsScreen() {
         }
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -244,7 +250,11 @@ fun BirthdayDatePicker(
 
 
 @Composable
-private fun ClientItem(client: ClientModel, onDeleteClient: () -> Unit, onModifyClient: () -> Unit) {
+private fun ClientItem(
+    client: ClientModel,
+    onDeleteClient: () -> Unit,
+    onModifyClient: () -> Unit,
+) {
 
     var showConfirmDeleteClientDialog by remember { mutableStateOf(false) }
 
@@ -308,7 +318,7 @@ enum class ClientDataActions {
 @Composable
 private fun ClientDialog(
     clientName: String,
-    editDialog:Boolean,
+    editDialog: Boolean,
     clientLastname: String,
     birthday: LocalDate?,
     phoneNumber: String,
@@ -347,10 +357,14 @@ private fun ClientDialog(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CardTitle(if(editDialog) "Editar Cliente" else "Agregar Cliente")
+                    CardTitle(if (editDialog) "Editar Cliente" else "Agregar Cliente")
                 }
                 Spacer(modifier = Modifier.size(0.dp))
-                TextFieldItem(clientName, label = "Nombre", focusRequester = focusRequester, onClick = {}) { input ->
+                TextFieldItem(
+                    clientName,
+                    label = "Nombre",
+                    focusRequester = focusRequester,
+                    onClick = {}) { input ->
                     val newInput = input.replaceFirstChar { char ->
                         if (char.isLowerCase()) char.titlecase() else char.toString()
                     }
@@ -386,7 +400,7 @@ private fun ClientDialog(
                         onAcceptButtonClick = {
                             if (isAllData) {
                                 showError = false
-                                if(editDialog) {
+                                if (editDialog) {
                                     onActionDone(ClientDataActions.UPDATE_DATA, "")
                                 } else {
                                     onActionDone(ClientDataActions.ADD_CLIENT, "")
