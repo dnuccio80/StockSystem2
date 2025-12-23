@@ -16,7 +16,7 @@ const val DATABASE_NAME = "ss_app_database.db" // Siempre con .db
 
 expect object StockSystemCTor : RoomDatabaseConstructor<StockSystemDatabase>
 
-@Database(entities = [ClientEntity::class, ConcessionEntity::class], version = 3)
+@Database(entities = [ClientEntity::class, ConcessionEntity::class], version = 4)
 @ConstructedBy(StockSystemCTor::class)
 @TypeConverters(LocalDateTypeConverter::class)
 abstract class StockSystemDatabase:RoomDatabase() {

@@ -50,4 +50,18 @@ class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
     override suspend fun addConcession(concession: ConcessionModel) {
         db.concessionDao().addConcession(concession.toEntity())
     }
+
+    override suspend fun updateConcession(concession: ConcessionModel) {
+        db.concessionDao().updateConcession(concession.toEntity())
+    }
+
+    override suspend fun deleteConcession(concessionId: Int) {
+        db.concessionDao().deleteConcession(concessionId)
+    }
+
+    override fun getConcessionByQuery(query: String): Flow<List<ConcessionModel>> {
+        return db.concessionDao().getConcessionByQuery(query).map { list ->
+            list.map { concession -> concession.toDomain() }
+        }
+    }
 }

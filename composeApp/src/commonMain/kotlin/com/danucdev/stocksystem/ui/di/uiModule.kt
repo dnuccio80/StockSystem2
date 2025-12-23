@@ -1,11 +1,11 @@
-package com.danucdev.stocksystem.ui
+package com.danucdev.stocksystem.ui.di
 
 import com.danucdev.stocksystem.ui.screens.clients.ClientsViewModel
-import org.koin.compose.viewmodel.dsl.viewModelOf
+import com.danucdev.stocksystem.ui.screens.concessions.ConcessionsViewModel
 import org.koin.core.module.dsl.viewModel
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val uiModule = module {
     viewModel { ClientsViewModel(get(), get(), get(), get()) }
+    viewModel { ConcessionsViewModel(get(), get(), get(), get()) }
 }

@@ -10,8 +10,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -109,6 +113,60 @@ fun TextFieldItem(
         enabled = enabled,
         label = { CardBody(label) }
     )
+}
+
+@Composable
+fun SearchBarItem(
+    query: String,
+    onValueChange:(String) -> Unit
+) {
+    TextField(
+        value = query,
+        onValueChange = { input ->
+            val newInput = input.replaceFirstChar { char ->
+                if (char.isLowerCase()) char.titlecase() else char.toString()
+            }
+            onValueChange(newInput)
+//            viewmodel.updateQueryClientName(newInput)
+        },
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+        shape = RoundedCornerShape(4.dp),
+        trailingIcon = {
+            if (query.isNotBlank()) {
+                Icon(
+                    Icons.Filled.Close,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .clickable {
+                            onValueChange("")
+//                            viewmodel.updateQueryClientName("")
+                        }
+                        .pointerHoverIcon(
+                            PointerIcon.Default
+                        ),
+                    tint = DarkFontColor
+                )
+            }
+        },
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = CardBackgroundSecond,
+            unfocusedContainerColor = CardBackgroundSecond,
+            focusedTextColor = DarkFontColor,
+            unfocusedTextColor = DarkFontColor,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+
+            ),
+        maxLines = 1,
+        singleLine = true,
+        placeholder = { androidx.compose.material3.Text("Buscar por nombre") },
+        leadingIcon = {
+            Icon(
+                Icons.Filled.Search,
+                contentDescription = "",
+                tint = DarkFontColor
+            )
+        })
 }
 
 @Composable

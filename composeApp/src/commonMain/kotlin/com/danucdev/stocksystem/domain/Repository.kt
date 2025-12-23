@@ -17,5 +17,8 @@ interface Repository {
     // Concessions
     fun getAllConcessions(): Flow<List<ConcessionModel>>
     suspend fun addConcession(concession: ConcessionModel)
+    suspend fun updateConcession(concession: ConcessionModel)
+    suspend fun deleteConcession(concessionId:Int)
+    fun getConcessionByQuery(query: String):Flow<List<ConcessionModel>>
 
 }

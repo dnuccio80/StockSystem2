@@ -62,6 +62,7 @@ import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.ConfirmDialog
 import com.danucdev.stocksystem.ui.core.ScreenTitle
+import com.danucdev.stocksystem.ui.core.SearchBarItem
 import com.danucdev.stocksystem.ui.core.TextFieldItem
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.Instant
@@ -100,51 +101,7 @@ fun ClientsScreen() {
                 ButtonTextItem("Agregar Cliente") { viewmodel.showAddClientDialog(true) }
             }
             Spacer(modifier = Modifier.size(0.dp))
-            TextField(
-                value = queryClientName,
-                onValueChange = { input ->
-                    val newInput = input.replaceFirstChar { char ->
-                        if (char.isLowerCase()) char.titlecase() else char.toString()
-                    }
-                    viewmodel.updateQueryClientName(newInput)
-                },
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
-                shape = RoundedCornerShape(4.dp),
-                trailingIcon = {
-                    if (queryClientName.isNotBlank()) {
-                        Icon(
-                            Icons.Filled.Close,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .clickable {
-                                    viewmodel.updateQueryClientName("")
-                                }
-                                .pointerHoverIcon(
-                                    PointerIcon.Default
-                                ),
-                            tint = DarkFontColor
-                        )
-                    }
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = CardBackgroundSecond,
-                    unfocusedContainerColor = CardBackgroundSecond,
-                    focusedTextColor = DarkFontColor,
-                    unfocusedTextColor = DarkFontColor,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-
-                    ),
-                maxLines = 1,
-                singleLine = true,
-                placeholder = { Text("Buscar por nombre") },
-                leadingIcon = {
-                    Icon(
-                        Icons.Filled.Search,
-                        contentDescription = "",
-                        tint = DarkFontColor
-                    )
-                })
+            SearchBarItem(queryClientName) { viewmodel.updateQueryClientName(it) }
             Spacer(modifier = Modifier.size(0.dp))
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -238,6 +195,8 @@ fun ClientsScreen() {
     }
 }
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BirthdayDatePicker(
@@ -285,7 +244,7 @@ fun BirthdayDatePicker(
 
 
 @Composable
-fun ClientItem(client: ClientModel, onDeleteClient: () -> Unit, onModifyClient: () -> Unit) {
+private fun ClientItem(client: ClientModel, onDeleteClient: () -> Unit, onModifyClient: () -> Unit) {
 
     var showConfirmDeleteClientDialog by remember { mutableStateOf(false) }
 

@@ -9,9 +9,9 @@ data class ConcessionEntity(
     @PrimaryKey(autoGenerate = true)
     val id:Int,
     val name:String,
-    val price:Int,
-    val stock:Int,
-    val adviceStock:Int
+    val price:String,
+    val stock:String?,
+    val adviceStock:String?
 ) {
     fun toDomain():ConcessionModel {
         return ConcessionModel(

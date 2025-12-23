@@ -5,9 +5,9 @@ import com.danucdev.stocksystem.data.entities.ConcessionEntity
 data class ConcessionModel(
     val id:Int = 0,
     val name:String,
-    val price:Int,
-    val stock:Int,
-    val adviceStock:Int,
+    val price:String,
+    val stock:String?,
+    val adviceStock:String?,
 ){
     fun toEntity():ConcessionEntity {
         return ConcessionEntity(
