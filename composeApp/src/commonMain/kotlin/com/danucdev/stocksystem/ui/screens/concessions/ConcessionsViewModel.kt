@@ -109,25 +109,9 @@ class ConcessionsViewModel(
         _questionClicked.value = false
     }
 
-    fun isAllData():Boolean {
-        return if(_manageStock.value) {
-            println("Estoy entrando al completo")
-            println("name: ${_articleName.value}")
-            println("price: ${_price.value}")
-            println("current stock: ${_currentStock.value}")
-            println("advice stock: ${_adviceStock.value}")
-            println(_articleName.value.isNotBlank() && _price.value.isNotBlank() && _currentStock.value.isNotBlank() && _adviceStock.value.isNotBlank())
-            _articleName.value.isNotBlank() && _price.value.isNotBlank() && _currentStock.value.isNotBlank() && _adviceStock.value.isNotBlank()
-        } else {
-            println("Estoy entrando al no manage")
-            println("name: ${_articleName.value}")
-            println("price: ${_price.value}")
-            println("current stock: ${_currentStock.value}")
-            println("advice stock: ${_adviceStock.value}")
-            println(_articleName.value.isNotBlank() && _price.value.isNotBlank())
-
-            _articleName.value.isNotBlank() && _price.value.isNotBlank()
-        }
+    fun isAllData(): Boolean {
+        return if (_manageStock.value) _articleName.value.isNotBlank() && _price.value.isNotBlank() && _currentStock.value.isNotBlank() && _adviceStock.value.isNotBlank()
+        else _articleName.value.isNotBlank() && _price.value.isNotBlank()
     }
 
     fun addNewConcession() {
@@ -157,7 +141,7 @@ class ConcessionsViewModel(
         }
     }
 
-    fun deleteConcessionById(concessionId:Int) {
+    fun deleteConcessionById(concessionId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             deleteConcession(concessionId)
         }
