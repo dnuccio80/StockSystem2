@@ -2,6 +2,7 @@ package com.danucdev.stocksystem.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.danucdev.stocksystem.data.entities.ConcessionEntity
@@ -10,11 +11,14 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CurrentAccountDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addCurrentAccount(currentAccount: CurrentAccountEntity)
 
     @Query("SELECT * FROM CurrentAccountEntity order by clientName ASC")
     fun getAllCurrentAccounts(): Flow<List<CurrentAccountEntity>>
+
+    @Query("SELECT * FROM CURRENTACCOUNTENTITY where id = :accountId LIMIT 1")
+    suspend fun isAlreadyCurrentAccount(accountId: Int):CurrentAccountEntity?
 
     @Update
     suspend fun updateCurrentAccount(currentAccount: CurrentAccountEntity)

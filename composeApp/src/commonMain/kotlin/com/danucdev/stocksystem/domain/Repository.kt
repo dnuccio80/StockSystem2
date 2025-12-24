@@ -28,5 +28,6 @@ interface Repository {
     suspend fun updateCurrentAccount(currentAccount: CurrentAccountModel)
     suspend fun deleteCurrentAccount(currentAccountId: Int)
     fun getCurrentAccountsByQuery(query:String): Flow<List<CurrentAccountModel>>
+    suspend fun isAlreadyCurrentAccount(accountId:Int):CurrentAccountModel?
 
 }

@@ -46,11 +46,9 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.danucdev.stocksystem.CardBackgroundFirst
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkAppBackground
@@ -130,17 +128,23 @@ fun NavigationWrapper() {
                 composable(Routes.Turns.route) { TurnsScreen() }
                 composable(Routes.Tournaments.route) { TournamentsScreen() }
                 composable(Routes.Clients.route) { ClientsScreen() }
-                composable(Routes.OpenAccounts.route) { OpenAccountsScreen() }
+                composable(Routes.OpenAccounts.route) {
+                    OpenAccountsScreen {
+                        accountId -> navController.navigate(Routes.OpenAccountDetails.createRoute(accountId))
+                        println(accountId)
+                    } }
                 composable(Routes.Inventory.route) { ConcessionScreen() }
-                composable(Routes.OpenAccountDetails.route) { backStackEntry ->
+                composable(Routes.OpenAccountDetails.route) {backStackEntry ->
 
-                    val accountId = backStackEntry
-                        .destination
-                        .route
-                        ?.substringAfter("OpenAccountDetails/")
-                        ?.toIntOrNull() ?: 0
+                    val route = backStackEntry.destination.route
+                        ?: error("Route is null")
 
-                    CurrentAccountDetailsScreen(clientId = accountId)
+                    val clientId = route
+                        .substringAfter("openAccountDetails/")
+                        .toIntOrNull()
+                        ?: error("Invalid accountId")
+
+                    CurrentAccountDetailsScreen(clientId = clientId)
                 }
             }
         }

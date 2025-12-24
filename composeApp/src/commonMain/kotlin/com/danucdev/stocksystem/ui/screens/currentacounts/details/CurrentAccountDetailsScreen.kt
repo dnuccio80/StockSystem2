@@ -25,10 +25,11 @@ fun CurrentAccountDetailsScreen(clientId:Int) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             TitleAndButtonRowItemScreen(
-                title = "Cuenta corriente de XXX",
+                title = "Cuenta corriente de $clientId",
                 buttonText = "Realizar un pago",
                 onButtonClick = { }
             )
+
         }
     }
 }
