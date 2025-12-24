@@ -46,9 +46,11 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.danucdev.stocksystem.CardBackgroundFirst
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkAppBackground
@@ -56,8 +58,9 @@ import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.ui.navigation.MenuItemData
 import com.danucdev.stocksystem.ui.navigation.Routes
 import com.danucdev.stocksystem.ui.screens.clients.ClientsScreen
-import com.danucdev.stocksystem.ui.screens.currentacounts.OpenAccountsScreen
+import com.danucdev.stocksystem.ui.screens.currentacounts.openaccounts.OpenAccountsScreen
 import com.danucdev.stocksystem.ui.screens.concessions.ConcessionScreen
+import com.danucdev.stocksystem.ui.screens.currentacounts.details.CurrentAccountDetailsScreen
 import com.danucdev.stocksystem.ui.screens.mainpanel.MainPanelScreen
 import com.danucdev.stocksystem.ui.screens.tournaments.TournamentsScreen
 import com.danucdev.stocksystem.ui.screens.turns.TurnsScreen
@@ -129,6 +132,16 @@ fun NavigationWrapper() {
                 composable(Routes.Clients.route) { ClientsScreen() }
                 composable(Routes.OpenAccounts.route) { OpenAccountsScreen() }
                 composable(Routes.Inventory.route) { ConcessionScreen() }
+                composable(Routes.OpenAccountDetails.route) { backStackEntry ->
+
+                    val accountId = backStackEntry
+                        .destination
+                        .route
+                        ?.substringAfter("OpenAccountDetails/")
+                        ?.toIntOrNull() ?: 0
+
+                    CurrentAccountDetailsScreen(clientId = accountId)
+                }
             }
         }
     }

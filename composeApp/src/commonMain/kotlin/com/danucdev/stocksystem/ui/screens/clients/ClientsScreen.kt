@@ -101,13 +101,6 @@ fun ClientsScreen() {
                 query = queryClientName,
                 onSearchValueChange = { viewmodel.updateQueryClientName(it) }
             )
-//            TitleAndButtonRowItemScreen(
-//                "Clientes",
-//                "Agregar Cliente"
-//            ) { viewmodel.showAddClientDialog(true) }
-//            Spacer(modifier = Modifier.size(0.dp))
-//            SearchBarItem(queryClientName) { viewmodel.updateQueryClientName(it) }
-//            Spacer(modifier = Modifier.size(0.dp))
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -128,7 +121,6 @@ fun ClientsScreen() {
                         CardBody("No hay clientes para mostrar")
                     }
                 }
-
             }
             // Add new client
             if (showAddClientDialog) {

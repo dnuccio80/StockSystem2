@@ -65,6 +65,7 @@ ksp {
 }
 
 dependencies {
+    implementation(libs.androidx.navigation.common.desktop)
     add("kspCommonMainMetadata", libs.room.compiler)
     add("kspJvm", libs.room.compiler)
 }

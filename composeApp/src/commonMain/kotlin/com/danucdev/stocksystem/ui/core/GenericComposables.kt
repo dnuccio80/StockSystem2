@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
@@ -76,8 +77,9 @@ fun AccentText(text: String, color: Color = Color.Green.copy(.6f)) {
 fun TextFieldItem(
     value: String,
     enabled: Boolean = true,
-    focusRequester:FocusRequester? = null,
+    focusRequester: FocusRequester? = null,
     label: String,
+    trailingIcon: ImageVector? = null,
     clickable: Boolean = false,
     onClick: () -> Unit,
     onValueChange: (String) -> Unit,
@@ -93,13 +95,19 @@ fun TextFieldItem(
                     PointerIcon.Default,
                     overrideDescendants = true
                 )
-            } else if(focusRequester != null) {
+            } else if (focusRequester != null) {
                 Modifier.fillMaxWidth().focusRequester(focusRequester)
-            }
-            else {
+            } else {
                 Modifier.fillMaxWidth()
             },
         shape = RoundedCornerShape(4.dp),
+        trailingIcon = {
+            if (trailingIcon != null) Icon(
+                trailingIcon,
+                contentDescription = "",
+                tint = Color.White
+            ) else null
+        },
         colors = TextFieldDefaults.colors(
             focusedContainerColor = CardBackgroundSecond.copy(alpha = .6f),
             unfocusedContainerColor = CardBackgroundSecond,
@@ -110,6 +118,7 @@ fun TextFieldItem(
             disabledContainerColor = CardBackgroundSecond,
             disabledTextColor = DarkFontColor
         ),
+
         maxLines = 1,
         singleLine = true,
         enabled = enabled,
@@ -118,15 +127,25 @@ fun TextFieldItem(
 }
 
 @Composable
-fun TitleAndButtonRowItemScreen(title:String, buttonText:String, onButtonClick:() -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+fun TitleAndButtonRowItemScreen(title: String, buttonText: String, onButtonClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         ScreenTitle(title)
         ButtonTextItem(buttonText) { onButtonClick() }
     }
 }
 
 @Composable
-fun TitleAndButtonRowItemScreenWithSearchBar(title:String, buttonText:String, onButtonClick:() -> Unit, query:String, onSearchValueChange:(String) -> Unit) {
+fun TitleAndButtonRowItemScreenWithSearchBar(
+    title: String,
+    buttonText: String,
+    onButtonClick: () -> Unit,
+    query: String,
+    onSearchValueChange: (String) -> Unit,
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -141,7 +160,7 @@ fun TitleAndButtonRowItemScreenWithSearchBar(title:String, buttonText:String, on
 @Composable
 fun SearchBarItem(
     query: String,
-    onValueChange:(String) -> Unit
+    onValueChange: (String) -> Unit,
 ) {
     TextField(
         value = query,
@@ -195,7 +214,10 @@ fun SearchBarItem(
 @Composable
 fun ConfirmDialog(text: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
     Dialog(onDismissRequest = { onDismiss() }) {
-        Card(shape = RoundedCornerShape(4.dp), colors = CardDefaults.cardColors(containerColor = DarkMenuBackground)) {
+        Card(
+            shape = RoundedCornerShape(4.dp),
+            colors = CardDefaults.cardColors(containerColor = DarkMenuBackground)
+        ) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
