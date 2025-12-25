@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import cafe.adriel.voyager.core.screen.Screen
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
@@ -60,129 +61,143 @@ import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
 import com.danucdev.stocksystem.ui.screens.clients.ClientDataActions
 import org.koin.compose.viewmodel.koinViewModel
 
-@Composable
-fun ConcessionScreen() {
+class ConcessionsScreen : Screen {
+    @Composable
+    override fun Content() {
+        val viewmodel = koinViewModel<ConcessionsViewModel>()
 
-    val viewmodel = koinViewModel<ConcessionsViewModel>()
+        val articleName by viewmodel.articleName.collectAsState()
+        val price by viewmodel.price.collectAsState()
+        val currentStock by viewmodel.currentStock.collectAsState()
+        val adviceStock by viewmodel.adviceStock.collectAsState()
+        val manageStock by viewmodel.manageStock.collectAsState()
+        val questionClicked by viewmodel.questionClicked.collectAsState()
+        val showAddArticleDialog by viewmodel.showAddArticleDialog.collectAsState()
+        val showEditArticleDialog by viewmodel.showEditArticleDialog.collectAsState()
+        val query by viewmodel.query.collectAsState()
+        val concessionsList by viewmodel.concessionsList.collectAsState()
 
-    val articleName by viewmodel.articleName.collectAsState()
-    val price by viewmodel.price.collectAsState()
-    val currentStock by viewmodel.currentStock.collectAsState()
-    val adviceStock by viewmodel.adviceStock.collectAsState()
-    val manageStock by viewmodel.manageStock.collectAsState()
-    val questionClicked by viewmodel.questionClicked.collectAsState()
-    val showAddArticleDialog by viewmodel.showAddArticleDialog.collectAsState()
-    val showEditArticleDialog by viewmodel.showEditArticleDialog.collectAsState()
-    val query by viewmodel.query.collectAsState()
-    val concessionsList by viewmodel.concessionsList.collectAsState()
-
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            TitleAndButtonRowItemScreenWithSearchBar(
-                title = "Inventario",
-                buttonText = "Agregar artículo",
-                onButtonClick = { viewmodel.updateShowAddArticleDialog() },
-                query = query,
-                onSearchValueChange = { viewmodel.updateQuery(it) }
-            )
+        Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.verticalScroll(
-                    rememberScrollState()
-                )
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (concessionsList.isEmpty()) {
-                    Box(modifier = Modifier.padding(horizontal = 64.dp)) {
-                        CardBody("No hay artículos para mostrar")
-                    }
-                } else {
-                    concessionsList.forEach { concession ->
-                        ConcessionItem(
-                            concession,
-                            onDelete = { viewmodel.deleteConcessionById(concession.id) },
-                            onModify = {
-                                viewmodel.assignConcessionData(concession)
-                                viewmodel.updateShowEditArticleDialog()
-                            }
-                        )
+                TitleAndButtonRowItemScreenWithSearchBar(
+                    title = "Inventario",
+                    buttonText = "Agregar artículo",
+                    onButtonClick = { viewmodel.updateShowAddArticleDialog() },
+                    query = query,
+                    onSearchValueChange = { viewmodel.updateQuery(it) }
+                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.verticalScroll(
+                        rememberScrollState()
+                    )
+                ) {
+                    if (concessionsList.isEmpty()) {
+                        Box(modifier = Modifier.padding(horizontal = 64.dp)) {
+                            CardBody("No hay artículos para mostrar")
+                        }
+                    } else {
+                        concessionsList.forEach { concession ->
+                            ConcessionItem(
+                                concession,
+                                onDelete = { viewmodel.deleteConcessionById(concession.id) },
+                                onModify = {
+                                    viewmodel.assignConcessionData(concession)
+                                    viewmodel.updateShowEditArticleDialog()
+                                }
+                            )
+                        }
                     }
                 }
+
+
             }
 
+            // Add Article
+            if (showAddArticleDialog) {
+                ConcessionDialog(
+                    articleName = articleName,
+                    price = price,
+                    currentStock = currentStock,
+                    adviceStock = adviceStock,
+                    manageStock = manageStock,
+                    isAllData = viewmodel.isAllData(),
+                    questionClicked = questionClicked,
+                    onActionDone = { action, value ->
+                        when (action) {
+                            ConcessionActions.CHANGE_NAME -> viewmodel.updateArticleName(value)
+                            ConcessionActions.CHANGE_PRICE -> viewmodel.updatePrice(value)
+                            ConcessionActions.MANAGE_STOCK -> viewmodel.updateManageStock()
+                            ConcessionActions.CHANGE_CURRENT_STOCK -> viewmodel.updateCurrentStock(
+                                value
+                            )
 
-        }
+                            ConcessionActions.CHANGE_ADVICE_STOCK -> viewmodel.updateAdviceStock(
+                                value
+                            )
 
-        // Add Article
-        if (showAddArticleDialog) {
-            ConcessionDialog(
-                articleName = articleName,
-                price = price,
-                currentStock = currentStock,
-                adviceStock = adviceStock,
-                manageStock = manageStock,
-                isAllData = viewmodel.isAllData(),
-                questionClicked = questionClicked,
-                onActionDone = { action, value ->
-                    when (action) {
-                        ConcessionActions.CHANGE_NAME -> viewmodel.updateArticleName(value)
-                        ConcessionActions.CHANGE_PRICE -> viewmodel.updatePrice(value)
-                        ConcessionActions.MANAGE_STOCK -> viewmodel.updateManageStock()
-                        ConcessionActions.CHANGE_CURRENT_STOCK -> viewmodel.updateCurrentStock(value)
-                        ConcessionActions.CHANGE_ADVICE_STOCK -> viewmodel.updateAdviceStock(value)
-                        ConcessionActions.QUESTION_CLICKED -> viewmodel.updateQuestionClicked()
-                        ConcessionActions.ON_DISMISS -> {
-                            viewmodel.updateShowAddArticleDialog()
-                            viewmodel.cleanAllData()
-                        }
+                            ConcessionActions.QUESTION_CLICKED -> viewmodel.updateQuestionClicked()
+                            ConcessionActions.ON_DISMISS -> {
+                                viewmodel.updateShowAddArticleDialog()
+                                viewmodel.cleanAllData()
+                            }
 
-                        ConcessionActions.ADD_ARTICLE -> {
-                            viewmodel.addNewConcession()
-                            viewmodel.cleanAllData()
-                            viewmodel.updateShowAddArticleDialog()
-                        }
-                    }
-                }
-            )
-        }
-
-        // Edit Article
-        if (showEditArticleDialog) {
-            ConcessionDialog(
-                articleName = articleName,
-                price = price,
-                currentStock = currentStock,
-                isEditedArticle = true,
-                adviceStock = adviceStock,
-                manageStock = manageStock,
-                isAllData = viewmodel.isAllData(),
-                questionClicked = questionClicked,
-                onActionDone = { action, value ->
-                    when (action) {
-                        ConcessionActions.CHANGE_NAME -> viewmodel.updateArticleName(value)
-                        ConcessionActions.CHANGE_PRICE -> viewmodel.updatePrice(value)
-                        ConcessionActions.MANAGE_STOCK -> viewmodel.updateManageStock()
-                        ConcessionActions.CHANGE_CURRENT_STOCK -> viewmodel.updateCurrentStock(value)
-                        ConcessionActions.CHANGE_ADVICE_STOCK -> viewmodel.updateAdviceStock(value)
-                        ConcessionActions.QUESTION_CLICKED -> viewmodel.updateQuestionClicked()
-                        ConcessionActions.ON_DISMISS -> {
-                            viewmodel.updateShowEditArticleDialog()
-                            viewmodel.cleanAllData()
-                        }
-
-                        ConcessionActions.ADD_ARTICLE -> {
-                            viewmodel.updateConcession()
-                            viewmodel.cleanAllData()
-                            viewmodel.updateShowEditArticleDialog()
+                            ConcessionActions.ADD_ARTICLE -> {
+                                viewmodel.addNewConcession()
+                                viewmodel.cleanAllData()
+                                viewmodel.updateShowAddArticleDialog()
+                            }
                         }
                     }
-                }
-            )
+                )
+            }
+
+            // Edit Article
+            if (showEditArticleDialog) {
+                ConcessionDialog(
+                    articleName = articleName,
+                    price = price,
+                    currentStock = currentStock,
+                    isEditedArticle = true,
+                    adviceStock = adviceStock,
+                    manageStock = manageStock,
+                    isAllData = viewmodel.isAllData(),
+                    questionClicked = questionClicked,
+                    onActionDone = { action, value ->
+                        when (action) {
+                            ConcessionActions.CHANGE_NAME -> viewmodel.updateArticleName(value)
+                            ConcessionActions.CHANGE_PRICE -> viewmodel.updatePrice(value)
+                            ConcessionActions.MANAGE_STOCK -> viewmodel.updateManageStock()
+                            ConcessionActions.CHANGE_CURRENT_STOCK -> viewmodel.updateCurrentStock(
+                                value
+                            )
+
+                            ConcessionActions.CHANGE_ADVICE_STOCK -> viewmodel.updateAdviceStock(
+                                value
+                            )
+
+                            ConcessionActions.QUESTION_CLICKED -> viewmodel.updateQuestionClicked()
+                            ConcessionActions.ON_DISMISS -> {
+                                viewmodel.updateShowEditArticleDialog()
+                                viewmodel.cleanAllData()
+                            }
+
+                            ConcessionActions.ADD_ARTICLE -> {
+                                viewmodel.updateConcession()
+                                viewmodel.cleanAllData()
+                                viewmodel.updateShowEditArticleDialog()
+                            }
+                        }
+                    }
+                )
+            }
         }
     }
 }
+
 
 @Composable
 private fun ConcessionItem(article: ConcessionModel, onDelete: () -> Unit, onModify: () -> Unit) {

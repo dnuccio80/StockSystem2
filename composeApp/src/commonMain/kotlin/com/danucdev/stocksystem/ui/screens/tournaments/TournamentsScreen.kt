@@ -10,15 +10,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import cafe.adriel.voyager.core.screen.Screen
 import com.danucdev.stocksystem.ui.core.ButtonTextItem
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 
-@Composable
-fun TournamentsScreen() {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            ScreenTitle("Torneos")
-            ButtonTextItem("Agregar Torneo") {}
+class TournamentsScreen: Screen {
+    @Composable
+    override fun Content() {
+        Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                ScreenTitle("Torneos")
+                ButtonTextItem("Agregar Torneo") {}
+            }
         }
     }
+
 }

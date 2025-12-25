@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
+import cafe.adriel.voyager.core.screen.Screen
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkMenuBackground
 import com.danucdev.stocksystem.domain.models.ClientModel
@@ -53,91 +54,99 @@ import com.danucdev.stocksystem.ui.core.TextFieldItem
 import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
 import org.koin.compose.viewmodel.koinViewModel
 
-@Composable
-fun OpenAccountsScreen(onCurrentAccountClicked:(Int) -> Unit) {
+class OpenAccountsScreen:Screen {
+    @Composable
+    override fun Content() {
+        val viewmodel = koinViewModel<OpenAccountsViewModel>()
 
-    val viewmodel = koinViewModel<OpenAccountsViewModel>()
+        val query by viewmodel.querySearchCurrentAccount.collectAsState()
+        val showAddCurrentAccountDialog by viewmodel.showAddCurrentAccountDialog.collectAsState()
+        val showClientDropdownMenu by viewmodel.showClientDropdownMenu.collectAsState()
+        val clientName by viewmodel.clientName.collectAsState()
+        val clientsList by viewmodel.clientsList.collectAsState()
+        val querySearchClient by viewmodel.querySearchClient.collectAsState()
+        val currentAccountsList by viewmodel.currentAccountsList.collectAsState()
+        val alreadyExistCurrentAccount by viewmodel.alreadyExist.collectAsState()
 
-    val query by viewmodel.querySearchCurrentAccount.collectAsState()
-    val showAddCurrentAccountDialog by viewmodel.showAddCurrentAccountDialog.collectAsState()
-    val showClientDropdownMenu by viewmodel.showClientDropdownMenu.collectAsState()
-    val clientName by viewmodel.clientName.collectAsState()
-    val clientsList by viewmodel.clientsList.collectAsState()
-    val querySearchClient by viewmodel.querySearchClient.collectAsState()
-    val currentAccountsList by viewmodel.currentAccountsList.collectAsState()
-    val alreadyExistCurrentAccount by viewmodel.alreadyExist.collectAsState()
-
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            TitleAndButtonRowItemScreenWithSearchBar(
-                title = "Cuentas Corrientes",
-                buttonText = "Nueva cuenta corriente",
-                onButtonClick = { viewmodel.updateShowAddCurrentAccountDialog(true) },
-                query = query,
-                onSearchValueChange = { viewmodel.updateQuerySearchCurrentAccount(it) }
-            )
-            if (currentAccountsList.isNotEmpty()) {
-                Column(
-                    modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    currentAccountsList.forEach { currentAccount ->
-                        CurrentAccountItem(currentAccount) { onCurrentAccountClicked(currentAccount.id) }
+        Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TitleAndButtonRowItemScreenWithSearchBar(
+                    title = "Cuentas Corrientes",
+                    buttonText = "Nueva cuenta corriente",
+                    onButtonClick = { viewmodel.updateShowAddCurrentAccountDialog(true) },
+                    query = query,
+                    onSearchValueChange = { viewmodel.updateQuerySearchCurrentAccount(it) }
+                )
+                if (currentAccountsList.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        currentAccountsList.forEach { currentAccount ->
+                            CurrentAccountItem(currentAccount) { /*onCurrentAccountClicked(currentAccount.id)*/ }
+                        }
                     }
-                }
-            } else {
-                Box(modifier = Modifier.padding(horizontal = 64.dp)) {
-                    CardBody("No hay cuentas corrientes disponibles")
+                } else {
+                    Box(modifier = Modifier.padding(horizontal = 64.dp)) {
+                        CardBody("No hay cuentas corrientes disponibles")
+                    }
                 }
             }
-        }
-        if (showAddCurrentAccountDialog) {
-            AddCurrentAccountDialog(
-                clientName = clientName,
-                clientsList = clientsList,
-                showClientDropdownMenu = showClientDropdownMenu,
-                querySearchClient = querySearchClient,
-                isAllData = viewmodel.isAllData(),
-                isAlreadyCurrentAccount = alreadyExistCurrentAccount,
-                onActionDone = { action, value ->
-                    when (action) {
-                        OpenAccountsActions.OPEN_CLIENT_LIST -> viewmodel.updateShowClientDropdownMenu(
-                            true
-                        )
-
-                        OpenAccountsActions.CLIENT_SELECTED -> {
-                            viewmodel.updateShowClientDropdownMenu(false)
-                            viewmodel.updateClientSelected(value)
-                            viewmodel.updateQueryClientName("")
-                        }
-
-                        OpenAccountsActions.ADD_NEW_CLIENT -> {
-                        }
-
-                        OpenAccountsActions.ADD_NEW_CURRENT_ACCOUNT -> {
-                            viewmodel.tryAddCurrentAccount()
-                        }
-
-                        OpenAccountsActions.DISMISS -> {
-                            viewmodel.updateShowAddCurrentAccountDialog(false)
-                            viewmodel.cleanData()
-                        }
-
-                        OpenAccountsActions.CLOSE_CLIENT_LIST -> {
-                            viewmodel.updateShowClientDropdownMenu(
-                                false
+            if (showAddCurrentAccountDialog) {
+                AddCurrentAccountDialog(
+                    clientName = clientName,
+                    clientsList = clientsList,
+                    showClientDropdownMenu = showClientDropdownMenu,
+                    querySearchClient = querySearchClient,
+                    isAllData = viewmodel.isAllData(),
+                    isAlreadyCurrentAccount = alreadyExistCurrentAccount,
+                    onActionDone = { action, value ->
+                        when (action) {
+                            OpenAccountsActions.OPEN_CLIENT_LIST -> viewmodel.updateShowClientDropdownMenu(
+                                true
                             )
-                            viewmodel.updateQueryClientName("")
-                        }
 
-                        OpenAccountsActions.CHANGE_QUERY -> viewmodel.updateQueryClientName(value)
-                    }
-                },
-            )
-        }
+                            OpenAccountsActions.CLIENT_SELECTED -> {
+                                viewmodel.updateShowClientDropdownMenu(false)
+                                viewmodel.updateClientSelected(value)
+                                viewmodel.updateQueryClientName("")
+                            }
+
+                            OpenAccountsActions.ADD_NEW_CLIENT -> {
+                            }
+
+                            OpenAccountsActions.ADD_NEW_CURRENT_ACCOUNT -> {
+                                viewmodel.tryAddCurrentAccount()
+                            }
+
+                            OpenAccountsActions.DISMISS -> {
+                                viewmodel.updateShowAddCurrentAccountDialog(false)
+                                viewmodel.cleanData()
+                            }
+
+                            OpenAccountsActions.CLOSE_CLIENT_LIST -> {
+                                viewmodel.updateShowClientDropdownMenu(
+                                    false
+                                )
+                                viewmodel.updateQueryClientName("")
+                            }
+
+                            OpenAccountsActions.CHANGE_QUERY -> viewmodel.updateQueryClientName(value)
+                        }
+                    },
+                )
+            }
+    }
+
+}
+
+@Composable
+fun OpenAccountsSaacreen(onCurrentAccountClicked:(Int) -> Unit) {
+
+
     }
 }
 

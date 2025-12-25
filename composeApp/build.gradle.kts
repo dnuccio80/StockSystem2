@@ -34,6 +34,9 @@ kotlin {
             implementation("org.jetbrains.androidx.navigation:navigation-compose:2.9.1")
             implementation("org.jetbrains.compose.material:material-icons-extended:1.7.3")
             implementation(compose.animation)
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.transitions)
+            implementation(libs.voyager.koin)
         }
 
         commonTest.dependencies {

@@ -14,18 +14,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.screen.Screen
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.ui.core.ButtonTextItem
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 
-@Composable
-fun TurnsScreen() {
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            ScreenTitle("Turnos del día")
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                ButtonTextItem("Agendar turno") { }
+class TurnsScreen: Screen {
+    @Composable
+    override fun Content() {
+        Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                ScreenTitle("Turnos del día")
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    ButtonTextItem("Agendar turno") { }
+                }
             }
         }
     }
+
 }
+

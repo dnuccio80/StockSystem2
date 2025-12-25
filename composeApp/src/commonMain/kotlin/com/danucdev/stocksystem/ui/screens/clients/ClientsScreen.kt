@@ -2,7 +2,6 @@ package com.danucdev.stocksystem.ui.screens.clients
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,10 +17,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -33,8 +30,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,24 +42,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerIcon
-import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import cafe.adriel.voyager.core.screen.Screen
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.ui.core.AcceptDeclineButtons
-import com.danucdev.stocksystem.ui.core.ButtonTextItem
 import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.ConfirmDialog
-import com.danucdev.stocksystem.ui.core.ScreenTitle
-import com.danucdev.stocksystem.ui.core.SearchBarItem
 import com.danucdev.stocksystem.ui.core.TextFieldItem
-import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreen
 import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
 import org.koin.compose.viewmodel.koinViewModel
 import java.time.Instant
@@ -73,125 +63,247 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-@Composable
-fun ClientsScreen() {
+class ClientsScreen:Screen {
+    @Composable
+    override fun Content() {
+        val viewmodel = koinViewModel<ClientsViewModel>()
 
-    val viewmodel = koinViewModel<ClientsViewModel>()
+        val clientName by viewmodel.clientName.collectAsState()
+        val clientLastname by viewmodel.clientLastName.collectAsState()
+        val phoneNumber by viewmodel.phoneNumber.collectAsState()
+        val showAddClientDialog by viewmodel.showAddClientDialog.collectAsState()
+        val showEditClientDialog by viewmodel.showEditClientDialog.collectAsState()
+        val clientsList by viewmodel.allClients.collectAsState()
+        val birthDate by viewmodel.birthDate.collectAsState()
+        val queryClientName by viewmodel.queryClientName.collectAsState()
+        val showBirthdayDialog by viewmodel.showBirthdayDialog.collectAsState()
 
-    val clientName by viewmodel.clientName.collectAsState()
-    val clientLastname by viewmodel.clientLastName.collectAsState()
-    val phoneNumber by viewmodel.phoneNumber.collectAsState()
-    val showAddClientDialog by viewmodel.showAddClientDialog.collectAsState()
-    val showEditClientDialog by viewmodel.showEditClientDialog.collectAsState()
-    val clientsList by viewmodel.allClients.collectAsState()
-    val birthDate by viewmodel.birthDate.collectAsState()
-    val queryClientName by viewmodel.queryClientName.collectAsState()
-    val showBirthdayDialog by viewmodel.showBirthdayDialog.collectAsState()
-
-
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            TitleAndButtonRowItemScreenWithSearchBar(
-                title = "Clientes",
-                buttonText = "Agregar Cliente",
-                onButtonClick = { viewmodel.showAddClientDialog(true) },
-                query = queryClientName,
-                onSearchValueChange = { viewmodel.updateQueryClientName(it) }
-            )
+        Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
             Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                if (clientsList.isNotEmpty()) {
-                    clientsList.forEach { client ->
-                        ClientItem(
-                            client = client,
-                            onDeleteClient = { viewmodel.deleteClientData(client.id) },
-                            onModifyClient = {
-                                viewmodel.assignClientData(client)
-                                viewmodel.showEditClientDialog(true)
-                            }
-                        )
-                    }
-                } else {
-                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)) {
-                        CardBody("No hay clientes para mostrar")
+                TitleAndButtonRowItemScreenWithSearchBar(
+                    title = "Clientes",
+                    buttonText = "Agregar Cliente",
+                    onButtonClick = { viewmodel.showAddClientDialog(true) },
+                    query = queryClientName,
+                    onSearchValueChange = { viewmodel.updateQueryClientName(it) }
+                )
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    if (clientsList.isNotEmpty()) {
+                        clientsList.forEach { client ->
+                            ClientItem(
+                                client = client,
+                                onDeleteClient = { viewmodel.deleteClientData(client.id) },
+                                onModifyClient = {
+                                    viewmodel.assignClientData(client)
+                                    viewmodel.showEditClientDialog(true)
+                                }
+                            )
+                        }
+                    } else {
+                        Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)) {
+                            CardBody("No hay clientes para mostrar")
+                        }
                     }
                 }
-            }
-            // Add new client
-            if (showAddClientDialog) {
-                ClientDialog(
-                    clientName = clientName,
-                    editDialog = false,
-                    clientLastname = clientLastname,
-                    birthday = birthDate,
-                    phoneNumber = phoneNumber,
-                    isAllData = viewmodel.isAllData(),
-                    onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
-                    onActionDone = { action, value ->
-                        when (action) {
-                            ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
-                            ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
-                                value
-                            )
+                // Add new client
+                if (showAddClientDialog) {
+                    ClientDialog(
+                        clientName = clientName,
+                        editDialog = false,
+                        clientLastname = clientLastname,
+                        birthday = birthDate,
+                        phoneNumber = phoneNumber,
+                        isAllData = viewmodel.isAllData(),
+                        onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
+                        onActionDone = { action, value ->
+                            when (action) {
+                                ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
+                                ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
+                                    value
+                                )
 
-                            ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
-                            ClientDataActions.DISMISS -> viewmodel.showAddClientDialog(false)
-                            ClientDataActions.ADD_CLIENT -> {
-                                viewmodel.showAddClientDialog(false)
-                                viewmodel.addNewClient()
-                                viewmodel.cleanDialogData()
-                            }
+                                ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
+                                ClientDataActions.DISMISS -> viewmodel.showAddClientDialog(false)
+                                ClientDataActions.ADD_CLIENT -> {
+                                    viewmodel.showAddClientDialog(false)
+                                    viewmodel.addNewClient()
+                                    viewmodel.cleanDialogData()
+                                }
 
-                            ClientDataActions.UPDATE_DATA -> {}
-                        }
-                    }
-                )
-            }
-            // Edit Client
-            if (showEditClientDialog) {
-                ClientDialog(
-                    clientName = clientName,
-                    editDialog = true,
-                    clientLastname = clientLastname,
-                    birthday = birthDate,
-                    phoneNumber = phoneNumber,
-                    isAllData = viewmodel.isAllData(),
-                    onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
-                    onActionDone = { action, value ->
-                        when (action) {
-                            ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
-                            ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
-                                value
-                            )
-
-                            ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
-                            ClientDataActions.DISMISS -> {
-                                viewmodel.showEditClientDialog(false)
-                                viewmodel.cleanDialogData()
-                            }
-
-                            ClientDataActions.ADD_CLIENT -> {}
-                            ClientDataActions.UPDATE_DATA -> {
-                                viewmodel.showEditClientDialog(false)
-                                viewmodel.updateClient()
-                                viewmodel.cleanDialogData()
+                                ClientDataActions.UPDATE_DATA -> {}
                             }
                         }
-                    })
-            }
+                    )
+                }
+                // Edit Client
+                if (showEditClientDialog) {
+                    ClientDialog(
+                        clientName = clientName,
+                        editDialog = true,
+                        clientLastname = clientLastname,
+                        birthday = birthDate,
+                        phoneNumber = phoneNumber,
+                        isAllData = viewmodel.isAllData(),
+                        onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
+                        onActionDone = { action, value ->
+                            when (action) {
+                                ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
+                                ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
+                                    value
+                                )
 
-            BirthdayDatePicker(showBirthdayDialog, onDateSelected = { selected ->
-                viewmodel.modifyBirthDate(selected)
-            }) {
-                viewmodel.updateShowBirthdayDialog(false)
+                                ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
+                                ClientDataActions.DISMISS -> {
+                                    viewmodel.showEditClientDialog(false)
+                                    viewmodel.cleanDialogData()
+                                }
+
+                                ClientDataActions.ADD_CLIENT -> {}
+                                ClientDataActions.UPDATE_DATA -> {
+                                    viewmodel.showEditClientDialog(false)
+                                    viewmodel.updateClient()
+                                    viewmodel.cleanDialogData()
+                                }
+                            }
+                        })
+                }
+
+                BirthdayDatePicker(showBirthdayDialog, onDateSelected = { selected ->
+                    viewmodel.modifyBirthDate(selected)
+                }) {
+                    viewmodel.updateShowBirthdayDialog(false)
+                }
             }
         }
     }
+
+}
+
+@Composable
+fun ClientetelasScreen() {
+
+//    val viewmodel = koinViewModel<ClientsViewModel>()
+//
+//    val clientName by viewmodel.clientName.collectAsState()
+//    val clientLastname by viewmodel.clientLastName.collectAsState()
+//    val phoneNumber by viewmodel.phoneNumber.collectAsState()
+//    val showAddClientDialog by viewmodel.showAddClientDialog.collectAsState()
+//    val showEditClientDialog by viewmodel.showEditClientDialog.collectAsState()
+//    val clientsList by viewmodel.allClients.collectAsState()
+//    val birthDate by viewmodel.birthDate.collectAsState()
+//    val queryClientName by viewmodel.queryClientName.collectAsState()
+//    val showBirthdayDialog by viewmodel.showBirthdayDialog.collectAsState()
+//
+//
+//    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+//        Column(
+//            modifier = Modifier.fillMaxWidth(),
+//            verticalArrangement = Arrangement.spacedBy(16.dp)
+//        ) {
+//            TitleAndButtonRowItemScreenWithSearchBar(
+//                title = "Clientes",
+//                buttonText = "Agregar Cliente",
+//                onButtonClick = { viewmodel.showAddClientDialog(true) },
+//                query = queryClientName,
+//                onSearchValueChange = { viewmodel.updateQueryClientName(it) }
+//            )
+//            Column(
+//                modifier = Modifier.verticalScroll(rememberScrollState()),
+//                verticalArrangement = Arrangement.spacedBy(16.dp)
+//            ) {
+//                if (clientsList.isNotEmpty()) {
+//                    clientsList.forEach { client ->
+//                        ClientItem(
+//                            client = client,
+//                            onDeleteClient = { viewmodel.deleteClientData(client.id) },
+//                            onModifyClient = {
+//                                viewmodel.assignClientData(client)
+//                                viewmodel.showEditClientDialog(true)
+//                            }
+//                        )
+//                    }
+//                } else {
+//                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)) {
+//                        CardBody("No hay clientes para mostrar")
+//                    }
+//                }
+//            }
+//            // Add new client
+//            if (showAddClientDialog) {
+//                ClientDialog(
+//                    clientName = clientName,
+//                    editDialog = false,
+//                    clientLastname = clientLastname,
+//                    birthday = birthDate,
+//                    phoneNumber = phoneNumber,
+//                    isAllData = viewmodel.isAllData(),
+//                    onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
+//                    onActionDone = { action, value ->
+//                        when (action) {
+//                            ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
+//                            ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
+//                                value
+//                            )
+//
+//                            ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
+//                            ClientDataActions.DISMISS -> viewmodel.showAddClientDialog(false)
+//                            ClientDataActions.ADD_CLIENT -> {
+//                                viewmodel.showAddClientDialog(false)
+//                                viewmodel.addNewClient()
+//                                viewmodel.cleanDialogData()
+//                            }
+//
+//                            ClientDataActions.UPDATE_DATA -> {}
+//                        }
+//                    }
+//                )
+//            }
+//            // Edit Client
+//            if (showEditClientDialog) {
+//                ClientDialog(
+//                    clientName = clientName,
+//                    editDialog = true,
+//                    clientLastname = clientLastname,
+//                    birthday = birthDate,
+//                    phoneNumber = phoneNumber,
+//                    isAllData = viewmodel.isAllData(),
+//                    onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
+//                    onActionDone = { action, value ->
+//                        when (action) {
+//                            ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
+//                            ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
+//                                value
+//                            )
+//
+//                            ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
+//                            ClientDataActions.DISMISS -> {
+//                                viewmodel.showEditClientDialog(false)
+//                                viewmodel.cleanDialogData()
+//                            }
+//
+//                            ClientDataActions.ADD_CLIENT -> {}
+//                            ClientDataActions.UPDATE_DATA -> {
+//                                viewmodel.showEditClientDialog(false)
+//                                viewmodel.updateClient()
+//                                viewmodel.cleanDialogData()
+//                            }
+//                        }
+//                    })
+//            }
+//
+//            BirthdayDatePicker(showBirthdayDialog, onDateSelected = { selected ->
+//                viewmodel.modifyBirthDate(selected)
+//            }) {
+//                viewmodel.updateShowBirthdayDialog(false)
+//            }
+//        }
+//    }
 }
 
 

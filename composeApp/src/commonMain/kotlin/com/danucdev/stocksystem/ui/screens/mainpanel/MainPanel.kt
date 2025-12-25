@@ -24,6 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.danucdev.stocksystem.DarkAccentColorText
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
@@ -33,39 +36,45 @@ import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 
-@Composable
-fun MainPanelScreen() {
 
-    val verticalScroll = rememberScrollState()
+class MainPanelScreen :Screen {
+    @Composable
+    override fun Content() {
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.verticalScroll(verticalScroll)) {
-            MainHeader()
-            FloatingCardItem("Balance") {
-                AccentText("$32.500")
-                RowCardItem("Efectivo", "$50.000")
-                RowCardItem("Transferencias", "$115.250")
-                RowCardItem("Cuentas corrientes", "\$3.500")
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    ButtonTextItem("Ver Resumen") {  }
+//        val navigator = LocalNavigator.currentOrThrow
+
+        val verticalScroll = rememberScrollState()
+
+        Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+            Column(verticalArrangement = Arrangement.spacedBy(16.dp), modifier = Modifier.verticalScroll(verticalScroll)) {
+                MainHeader()
+                FloatingCardItem("Balance") {
+                    AccentText("$32.500")
+                    RowCardItem("Efectivo", "$50.000")
+                    RowCardItem("Transferencias", "$115.250")
+                    RowCardItem("Cuentas corrientes", "\$3.500")
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                        ButtonTextItem("Ver Resumen") {  }
+                    }
                 }
-            }
-            FloatingCardItem("Turnos libres del día") {
-                RowCardItem("Libres en cancha 1", "3 turnos")
-                RowCardItem("Libres en cancha 2", "5 turnos")
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    ButtonTextItem("Ver turnos libres") {  }
+                FloatingCardItem("Turnos libres del día") {
+                    RowCardItem("Libres en cancha 1", "3 turnos")
+                    RowCardItem("Libres en cancha 2", "5 turnos")
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                        ButtonTextItem("Ver turnos libres") {  }
+                    }
                 }
-            }
-            FloatingCardItem("Cuentas Corrientes") {
-                AccentText("$580.000", color = DarkAccentColorText)
-                RowCardItem("Cuentas corrientes activas:", "33 cuentas")
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
-                    ButtonTextItem("Ver cuentas corrientes") {  }
+                FloatingCardItem("Cuentas Corrientes") {
+                    AccentText("$580.000", color = DarkAccentColorText)
+                    RowCardItem("Cuentas corrientes activas:", "33 cuentas")
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                        ButtonTextItem("Ver cuentas corrientes") {  }
+                    }
                 }
             }
         }
     }
+
 }
 
 @Composable

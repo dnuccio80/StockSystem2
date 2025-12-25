@@ -1,17 +1,61 @@
 package com.danucdev.stocksystem
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Fastfood
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MilitaryTech
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.SportsTennis
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import cafe.adriel.voyager.navigator.Navigator
+import cafe.adriel.voyager.transitions.FadeTransition
+import cafe.adriel.voyager.transitions.SlideTransition
 import com.danucdev.stocksystem.data.di.dataModule
 import com.danucdev.stocksystem.data.di.platformModule
 import com.danucdev.stocksystem.domain.domainModule
 import com.danucdev.stocksystem.ui.di.uiModule
-import com.danucdev.stocksystem.ui.screens.core.NavigationWrapper
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import com.danucdev.stocksystem.ui.navigation.MenuItemData
+import com.danucdev.stocksystem.ui.navigation.Routes
+import com.danucdev.stocksystem.ui.screens.clients.ClientsScreen
+import com.danucdev.stocksystem.ui.screens.concessions.ConcessionsScreen
+import com.danucdev.stocksystem.ui.screens.core.TopBar
+import com.danucdev.stocksystem.ui.screens.currentacounts.openaccounts.OpenAccountsScreen
+import com.danucdev.stocksystem.ui.screens.mainpanel.MainPanelScreen
+import com.danucdev.stocksystem.ui.screens.tournaments.TournamentsScreen
+import com.danucdev.stocksystem.ui.screens.turns.TurnsScreen
 import org.koin.compose.KoinApplication
 
 @Composable
-@Preview
 fun App() {
     MaterialTheme {
 
@@ -23,7 +67,144 @@ fun App() {
                 platformModule()
             )
         }) {
-            NavigationWrapper()
+
+            val menuItemList = listOf(
+                MenuItemData(
+                    title = "Panel Principal",
+                    icon = Icons.Filled.Home,
+                    route = Routes.MainPanel
+                ),
+                MenuItemData(
+                    title = "Turnos",
+                    icon = Icons.Filled.SportsTennis,
+                    route = Routes.Turns
+                ),
+                MenuItemData(
+                    title = "Torneos",
+                    icon = Icons.Filled.MilitaryTech,
+                    route = Routes.Tournaments
+                ),
+                MenuItemData(
+                    title = "Clientes",
+                    icon = Icons.Filled.Person,
+                    route = Routes.Clients
+                ),
+                MenuItemData(
+                    title = "Cuentas Corrientes",
+                    icon = Icons.Filled.AccountBox,
+                    route = Routes.OpenAccounts
+                ),
+                MenuItemData(
+                    title = "Inventario",
+                    icon = Icons.Filled.Fastfood,
+                    route = Routes.Inventory
+                ),
+            )
+
+            var menuItemSelected by remember { mutableStateOf(Routes.MainPanel.route) }
+
+            Navigator(screen = MainPanelScreen()) {navigator ->
+
+                val currentScreen = navigator.lastItem
+
+                Scaffold(
+                    topBar = { TopBar() },
+                    containerColor = DarkAppBackground,
+                ) { innerPadding ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(
+                            top = innerPadding.calculateTopPadding(),
+                            bottom = 16.dp,
+                            start = 16.dp,
+                            end = 16.dp
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Card(
+                            modifier =
+                                Modifier
+                                    .fillMaxHeight()
+                                    .width(250.dp),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = CardBackgroundSecond),
+                            elevation = CardDefaults.cardElevation(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                menuItemList.forEach { item ->
+                                    MenuItem(item, menuItemSelected) { newMenuItemSelected ->
+                                        menuItemSelected = newMenuItemSelected
+                                        when(menuItemSelected) {
+                                            Routes.MainPanel.route -> if(currentScreen !is MainPanelScreen) {
+                                                navigator.popUntilRoot()
+                                                navigator.replace(MainPanelScreen())
+                                            }
+                                            Routes.Turns.route ->  if(currentScreen !is TurnsScreen) {
+                                                navigator.popUntilRoot()
+                                                navigator.replace(TurnsScreen())
+                                            }
+                                            Routes.OpenAccounts.route ->  if(currentScreen !is OpenAccountsScreen) {
+                                                navigator.popUntilRoot()
+                                                navigator.replace(OpenAccountsScreen())
+                                            }
+                                            Routes.Inventory.route ->  if(currentScreen !is ConcessionsScreen) {
+                                                navigator.popUntilRoot()
+                                                navigator.replace((ConcessionsScreen()))
+                                            }
+                                            Routes.Clients.route ->  if(currentScreen !is ClientsScreen) {
+                                                navigator.popUntilRoot()
+                                                navigator.replace(ClientsScreen())
+                                            }
+                                            Routes.Tournaments.route ->  if(currentScreen !is TournamentsScreen) {
+                                                navigator.popUntilRoot()
+                                                navigator.replace(TournamentsScreen())
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        FadeTransition(navigator)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MenuItem(
+    itemData: MenuItemData,
+    menuItemSelected: String,
+    onClick: (String) -> Unit,
+) {
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+
+    Box(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    if (menuItemSelected == itemData.route.route) DarkAppBackground.copy(
+                        alpha = .6f
+                    ) else if (isHovered) CardBackgroundFirst else Color.Transparent
+                )
+                .hoverable(interactionSource)
+                .clickable { onClick(itemData.route.route) }
+
+    ) {
+        Row(
+            modifier = Modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(itemData.icon, contentDescription = "menu item", tint = DarkFontColor)
+            Text(itemData.title, color = DarkFontColor, fontSize = 14.sp)
         }
     }
 }

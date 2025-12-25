@@ -2,9 +2,6 @@ package com.danucdev.stocksystem.ui.screens.core
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.hoverable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,141 +46,107 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.danucdev.stocksystem.CardBackgroundFirst
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkAppBackground
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.ui.navigation.MenuItemData
 import com.danucdev.stocksystem.ui.navigation.Routes
-import com.danucdev.stocksystem.ui.screens.clients.ClientsScreen
-import com.danucdev.stocksystem.ui.screens.currentacounts.openaccounts.OpenAccountsScreen
-import com.danucdev.stocksystem.ui.screens.concessions.ConcessionScreen
+import com.danucdev.stocksystem.ui.screens.clients.ClientetelasScreen
 import com.danucdev.stocksystem.ui.screens.currentacounts.details.CurrentAccountDetailsScreen
+import com.danucdev.stocksystem.ui.screens.currentacounts.openaccounts.OpenAccountsScreen
 import com.danucdev.stocksystem.ui.screens.mainpanel.MainPanelScreen
 import com.danucdev.stocksystem.ui.screens.tournaments.TournamentsScreen
 import com.danucdev.stocksystem.ui.screens.turns.TurnsScreen
+//
+//@Composable
+//fun NavigationWrapper() {
+//
+//    val navController = rememberNavController()
+//
+//    val menuItemList = listOf(
+//        MenuItemData(title = "Panel Principal", icon = Icons.Filled.Home, route = Routes.MainPanel),
+//        MenuItemData(title = "Turnos", icon = Icons.Filled.SportsTennis, route = Routes.Turns),
+//        MenuItemData(title = "Torneos", icon = Icons.Filled.MilitaryTech, route = Routes.Tournaments),
+//        MenuItemData(title = "Clientes", icon = Icons.Filled.Person, route = Routes.Clients),
+//        MenuItemData(title = "Cuentas Corrientes", icon = Icons.Filled.AccountBox, route = Routes.OpenAccounts),
+//        MenuItemData(title = "Inventario", icon = Icons.Filled.Fastfood, route = Routes.Inventory),
+//    )
+//
+//    var menuItemSelected by remember { mutableStateOf(Routes.MainPanel.route) }
+//
+//    Scaffold(
+//        topBar = { TopBar() },
+//        containerColor = DarkAppBackground
+//    ) { innerPadding ->
+//        Row(
+//            modifier = Modifier.fillMaxWidth().padding(
+//                top = innerPadding.calculateTopPadding(),
+//                bottom = 16.dp,
+//                start = 16.dp,
+//                end = 16.dp
+//            ),
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.spacedBy(16.dp)
+//        ) {
+//            Card(
+//                modifier =
+//                    Modifier
+//                        .fillMaxHeight()
+//                        .width(250.dp),
+//                shape = RoundedCornerShape(16.dp),
+//                colors = CardDefaults.cardColors(containerColor = CardBackgroundSecond),
+//                elevation = CardDefaults.cardElevation(16.dp)
+//            ) {
+//                Column(
+//                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+//                ) {
+//                    menuItemList.forEach { item ->
+////                        MenuItem(item, menuItemSelected) { newMenuItemSelected ->
+////                            menuItemSelected = newMenuItemSelected
+////                            navController.navigate(newMenuItemSelected) {
+////                                popUpTo(navController.graph.startDestinationRoute!!) {
+////                                    saveState = true
+////                                }
+////                                launchSingleTop = true
+////                                restoreState = true
+////                            }
+////                        }
+//                    }
+//                }
+//            }
+//            NavHost(
+//                navController = navController,
+//                startDestination = Routes.MainPanel.route,
+//            ) {
+//                composable(Routes.MainPanel.route) { MainPanelScreen() }
+//                composable(Routes.Turns.route) { TurnsScreen() }
+//                composable(Routes.Tournaments.route) { TournamentsScreen() }
+//                composable(Routes.Clients.route) { ClientetelasScreen() }
+//                composable(Routes.OpenAccounts.route) {
+//                    OpenAccountsScreen {
+//                        accountId -> navController.navigate(Routes.OpenAccountDetails.createRoute(accountId))
+//                        println(accountId)
+//                    } }
+//                composable(Routes.Inventory.route) { ConcessionScreen() }
+//                composable(Routes.OpenAccountDetails.route) {backStackEntry ->
+//
+//                    val route = backStackEntry.destination.route
+//                        ?: error("Route is null")
+//
+//                    val clientId = route
+//                        .substringAfter("openAccountDetails/")
+//                        .toIntOrNull()
+//                        ?: error("Invalid accountId")
+//
+//                    CurrentAccountDetailsScreen(clientId = clientId)
+//                }
+//            }
+//        }
+//    }
+//}
 
-@Composable
-fun NavigationWrapper() {
 
-    val navController = rememberNavController()
-
-    val menuItemList = listOf(
-        MenuItemData(title = "Panel Principal", icon = Icons.Filled.Home, route = Routes.MainPanel),
-        MenuItemData(title = "Turnos", icon = Icons.Filled.SportsTennis, route = Routes.Turns),
-        MenuItemData(title = "Torneos", icon = Icons.Filled.MilitaryTech, route = Routes.Tournaments),
-        MenuItemData(title = "Clientes", icon = Icons.Filled.Person, route = Routes.Clients),
-        MenuItemData(title = "Cuentas Corrientes", icon = Icons.Filled.AccountBox, route = Routes.OpenAccounts),
-        MenuItemData(title = "Inventario", icon = Icons.Filled.Fastfood, route = Routes.Inventory),
-    )
-
-    var menuItemSelected by remember { mutableStateOf(Routes.MainPanel.route) }
-
-    Scaffold(
-        topBar = { TopBar() },
-        containerColor = DarkAppBackground
-    ) { innerPadding ->
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(
-                top = innerPadding.calculateTopPadding(),
-                bottom = 16.dp,
-                start = 16.dp,
-                end = 16.dp
-            ),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Card(
-                modifier =
-                    Modifier
-                        .fillMaxHeight()
-                        .width(250.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = CardBackgroundSecond),
-                elevation = CardDefaults.cardElevation(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    menuItemList.forEach { item ->
-                        MenuItem(item, menuItemSelected) { newMenuItemSelected ->
-                            menuItemSelected = newMenuItemSelected
-                            navController.navigate(newMenuItemSelected) {
-                                popUpTo(navController.graph.startDestinationRoute!!) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        }
-                    }
-                }
-            }
-            NavHost(
-                navController = navController,
-                startDestination = Routes.MainPanel.route,
-            ) {
-                composable(Routes.MainPanel.route) { MainPanelScreen() }
-                composable(Routes.Turns.route) { TurnsScreen() }
-                composable(Routes.Tournaments.route) { TournamentsScreen() }
-                composable(Routes.Clients.route) { ClientsScreen() }
-                composable(Routes.OpenAccounts.route) {
-                    OpenAccountsScreen {
-                        accountId -> navController.navigate(Routes.OpenAccountDetails.createRoute(accountId))
-                        println(accountId)
-                    } }
-                composable(Routes.Inventory.route) { ConcessionScreen() }
-                composable(Routes.OpenAccountDetails.route) {backStackEntry ->
-
-                    val route = backStackEntry.destination.route
-                        ?: error("Route is null")
-
-                    val clientId = route
-                        .substringAfter("openAccountDetails/")
-                        .toIntOrNull()
-                        ?: error("Invalid accountId")
-
-                    CurrentAccountDetailsScreen(clientId = clientId)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun MenuItem(
-    itemData: MenuItemData,
-    menuItemSelected: String,
-    onClick: (String) -> Unit,
-) {
-
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
-
-    Box(
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .background(
-                    if (menuItemSelected == itemData.route.route) DarkAppBackground.copy(
-                        alpha = .6f
-                    ) else if (isHovered) CardBackgroundFirst else Color.Transparent
-                )
-                .hoverable(interactionSource)
-                .clickable { onClick(itemData.route.route) }
-
-    ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Icon(itemData.icon, contentDescription = "menu item", tint = DarkFontColor)
-            Text(itemData.title, color = DarkFontColor, fontSize = 14.sp)
-        }
-    }
-}
 
 
 @Composable
