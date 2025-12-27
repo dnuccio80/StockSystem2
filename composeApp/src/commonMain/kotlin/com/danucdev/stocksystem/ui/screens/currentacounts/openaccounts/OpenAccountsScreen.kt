@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavController
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkMenuBackground
 import com.danucdev.stocksystem.domain.models.ClientModel
@@ -52,12 +54,14 @@ import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.SearchBarItem
 import com.danucdev.stocksystem.ui.core.TextFieldItem
 import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
+import com.danucdev.stocksystem.ui.screens.currentacounts.details.CurrentAccountDetailsScreen
 import org.koin.compose.viewmodel.koinViewModel
 
-class OpenAccountsScreen:Screen {
+class OpenAccountsScreen : Screen {
     @Composable
     override fun Content() {
         val viewmodel = koinViewModel<OpenAccountsViewModel>()
+        val navigator = LocalNavigator.currentOrThrow
 
         val query by viewmodel.querySearchCurrentAccount.collectAsState()
         val showAddCurrentAccountDialog by viewmodel.showAddCurrentAccountDialog.collectAsState()
@@ -86,7 +90,7 @@ class OpenAccountsScreen:Screen {
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         currentAccountsList.forEach { currentAccount ->
-                            CurrentAccountItem(currentAccount) { /*onCurrentAccountClicked(currentAccount.id)*/ }
+                            CurrentAccountItem(currentAccount) { navigator.push(CurrentAccountDetailsScreen(currentAccount.id)) }
                         }
                     }
                 } else {
@@ -108,44 +112,32 @@ class OpenAccountsScreen:Screen {
                             OpenAccountsActions.OPEN_CLIENT_LIST -> viewmodel.updateShowClientDropdownMenu(
                                 true
                             )
-
                             OpenAccountsActions.CLIENT_SELECTED -> {
                                 viewmodel.updateShowClientDropdownMenu(false)
                                 viewmodel.updateClientSelected(value)
                                 viewmodel.updateQueryClientName("")
                             }
-
-                            OpenAccountsActions.ADD_NEW_CLIENT -> {
-                            }
-
                             OpenAccountsActions.ADD_NEW_CURRENT_ACCOUNT -> {
                                 viewmodel.tryAddCurrentAccount()
                             }
-
                             OpenAccountsActions.DISMISS -> {
                                 viewmodel.updateShowAddCurrentAccountDialog(false)
                                 viewmodel.cleanData()
                             }
-
                             OpenAccountsActions.CLOSE_CLIENT_LIST -> {
                                 viewmodel.updateShowClientDropdownMenu(
                                     false
                                 )
                                 viewmodel.updateQueryClientName("")
                             }
-
-                            OpenAccountsActions.CHANGE_QUERY -> viewmodel.updateQueryClientName(value)
+                            OpenAccountsActions.CHANGE_QUERY -> viewmodel.updateQueryClientName(
+                                value
+                            )
                         }
                     },
                 )
             }
-    }
-
-}
-
-@Composable
-fun OpenAccountsSaacreen(onCurrentAccountClicked:(Int) -> Unit) {
-
+        }
 
     }
 }
@@ -156,8 +148,8 @@ fun CurrentAccountItem(currentAccount: CurrentAccountModel, onAccountClicked: ()
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)
             .clickable { onAccountClicked() }.pointerHoverIcon(
-            PointerIcon.Hand
-        ),
+                PointerIcon.Hand
+            ),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = CardBackgroundSecond
@@ -181,7 +173,7 @@ fun CurrentAccountItem(currentAccount: CurrentAccountModel, onAccountClicked: ()
 
 
 enum class OpenAccountsActions {
-    OPEN_CLIENT_LIST, CLOSE_CLIENT_LIST, CLIENT_SELECTED, ADD_NEW_CLIENT, ADD_NEW_CURRENT_ACCOUNT, DISMISS, CHANGE_QUERY
+    OPEN_CLIENT_LIST, CLOSE_CLIENT_LIST, CLIENT_SELECTED, ADD_NEW_CURRENT_ACCOUNT, DISMISS, CHANGE_QUERY
 }
 
 @Composable
@@ -191,19 +183,20 @@ private fun AddCurrentAccountDialog(
     showClientDropdownMenu: Boolean,
     querySearchClient: String,
     isAllData: Boolean,
-    isAlreadyCurrentAccount:Boolean?,
+    isAlreadyCurrentAccount: Boolean?,
     onActionDone: (OpenAccountsActions, String) -> Unit,
 ) {
     var showError by remember { mutableStateOf(false) }
     var showAlreadyExistMessage by remember { mutableStateOf(false) }
 
     LaunchedEffect(isAlreadyCurrentAccount) {
-        when(isAlreadyCurrentAccount) {
+        when (isAlreadyCurrentAccount) {
             true -> showAlreadyExistMessage = true
             false -> {
                 onActionDone(OpenAccountsActions.DISMISS, "")
                 showAlreadyExistMessage = false
             }
+
             null -> {}
         }
     }
@@ -257,7 +250,11 @@ private fun AddCurrentAccountDialog(
                 }
                 if (isAlreadyCurrentAccount != null) {
                     androidx.compose.animation.AnimatedVisibility(isAlreadyCurrentAccount) {
-                        Text("Ya existe una cuenta corriente de este cliente", color = Color.Red, fontSize = 12.sp)
+                        Text(
+                            "Ya existe una cuenta corriente de este cliente",
+                            color = Color.Red,
+                            fontSize = 12.sp
+                        )
                     }
                 }
                 AnimatedVisibility(visible = showError) {

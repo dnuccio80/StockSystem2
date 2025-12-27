@@ -10,26 +10,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import cafe.adriel.voyager.core.screen.Screen
 import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreen
-import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
 import org.koin.compose.viewmodel.koinViewModel
 
-@Composable
-fun CurrentAccountDetailsScreen(clientId:Int) {
+class CurrentAccountDetailsScreen(clientId: Int): Screen {
 
-    val viewmodel = koinViewModel<CurrentAccountsDetailsViewModel>()
+    val client = clientId
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            TitleAndButtonRowItemScreen(
-                title = "Cuenta corriente de $clientId",
-                buttonText = "Realizar un pago",
-                onButtonClick = { }
-            )
+    @Composable
+    override fun Content() {
+        val viewmodel = koinViewModel<CurrentAccountsDetailsViewModel>()
 
+        Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                TitleAndButtonRowItemScreen(
+                    title = "Cuenta corriente de $client",
+                    buttonText = "Realizar un pago",
+                    onButtonClick = { }
+                )
+
+            }
         }
     }
+
 }
