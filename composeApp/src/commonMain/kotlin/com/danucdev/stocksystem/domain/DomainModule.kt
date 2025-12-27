@@ -9,6 +9,7 @@ import com.danucdev.stocksystem.domain.usecases.concessions.DeleteConcession
 import com.danucdev.stocksystem.domain.usecases.concessions.GetConcessions
 import com.danucdev.stocksystem.domain.usecases.concessions.UpdateConcession
 import com.danucdev.stocksystem.domain.usecases.currentaccounts.AddNewCurrentAccount
+import com.danucdev.stocksystem.domain.usecases.currentaccounts.GetCurrentAccountDetails
 import com.danucdev.stocksystem.domain.usecases.currentaccounts.GetCurrentAccounts
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
@@ -29,4 +30,5 @@ val domainModule = module {
     // Current Accounts
     factoryOf(::AddNewCurrentAccount)
     factoryOf(::GetCurrentAccounts)
+    factoryOf(::GetCurrentAccountDetails)
 }

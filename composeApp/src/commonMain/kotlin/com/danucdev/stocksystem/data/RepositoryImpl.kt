@@ -96,7 +96,8 @@ class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
         }
     }
 
-    override suspend fun isAlreadyCurrentAccount(accountId: Int): CurrentAccountModel? {
-        return db.currentAccountDao().isAlreadyCurrentAccount(accountId)?.toDomain()
+    override suspend fun getSingleCurrentAccountById(accountId: Int): CurrentAccountModel? {
+        return db.currentAccountDao().getSingleCurrentAccountById(accountId)?.toDomain()
     }
+
 }

@@ -10,61 +10,81 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.Navigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import com.danucdev.stocksystem.domain.models.CurrentAccountModel
 import com.danucdev.stocksystem.ui.core.ButtonTextItem
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 import org.koin.compose.viewmodel.koinViewModel
 
 class CurrentAccountDetailsScreen(clientId: Int) : Screen {
 
-    val client = clientId
+    val clientRef = clientId
 
     @Composable
     override fun Content() {
         val viewmodel = koinViewModel<CurrentAccountsDetailsViewModel>()
         val navigator = LocalNavigator.currentOrThrow
+        val clientDetails by viewmodel.accountDetails.collectAsState()
+        LaunchedEffect(true) {
+            viewmodel.getDetails(clientRef)
+        }
 
         Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            "",
-                            modifier = Modifier.clickable { navigator.pop() },
-                            tint = Color.White
-                        )
-                        ScreenTitle("Cuenta corriente: $client")
+                if(clientDetails == null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
                     }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        ButtonTextItem("Añadir deuda") { }
-                        ButtonTextItem("Realizar un pago") { }
-                    }
+                    return@Box
                 }
-
+                Header(clientDetails!!, navigator)
             }
         }
     }
 
+}
+
+@Composable
+private fun Header(client: CurrentAccountModel, navigator: Navigator) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                "",
+                modifier = Modifier.clickable { navigator.pop() },
+                tint = Color.White
+            )
+            ScreenTitle("Cuenta corriente: ${client.clientName}")
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            ButtonTextItem("Añadir deuda") { }
+            ButtonTextItem("Realizar un pago") { }
+        }
+    }
 }

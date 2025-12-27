@@ -1,6 +1,5 @@
 package com.danucdev.stocksystem.domain
 
-import com.danucdev.stocksystem.data.entities.ClientEntity
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.ConcessionModel
 import com.danucdev.stocksystem.domain.models.CurrentAccountModel
@@ -28,6 +27,6 @@ interface Repository {
     suspend fun updateCurrentAccount(currentAccount: CurrentAccountModel)
     suspend fun deleteCurrentAccount(currentAccountId: Int)
     fun getCurrentAccountsByQuery(query:String): Flow<List<CurrentAccountModel>>
-    suspend fun isAlreadyCurrentAccount(accountId:Int):CurrentAccountModel?
+    suspend fun getSingleCurrentAccountById(accountId:Int):CurrentAccountModel?
 
 }
