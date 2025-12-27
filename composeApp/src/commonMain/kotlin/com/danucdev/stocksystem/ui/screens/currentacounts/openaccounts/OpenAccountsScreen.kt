@@ -96,7 +96,6 @@ class OpenAccountsScreen : Screen {
                             CurrentAccountItem(currentAccount) {
                                 if (currentScreen !is CurrentAccountDetailsScreen) navigator.push(
                                     CurrentAccountDetailsScreen(currentAccount.id)
-                                    // Test
                                 )
                             }
                         }
