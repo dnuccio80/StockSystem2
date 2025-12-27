@@ -72,6 +72,9 @@ class OpenAccountsScreen : Screen {
         val currentAccountsList by viewmodel.currentAccountsList.collectAsState()
         val alreadyExistCurrentAccount by viewmodel.alreadyExist.collectAsState()
 
+        val currentScreen = navigator.lastItem
+
+
         Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -90,7 +93,11 @@ class OpenAccountsScreen : Screen {
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         currentAccountsList.forEach { currentAccount ->
-                            CurrentAccountItem(currentAccount) { navigator.push(CurrentAccountDetailsScreen(currentAccount.id)) }
+                            CurrentAccountItem(currentAccount) {
+                                if (currentScreen !is CurrentAccountDetailsScreen) navigator.push(
+                                    CurrentAccountDetailsScreen(currentAccount.id)
+                                )
+                            }
                         }
                     }
                 } else {
@@ -112,24 +119,29 @@ class OpenAccountsScreen : Screen {
                             OpenAccountsActions.OPEN_CLIENT_LIST -> viewmodel.updateShowClientDropdownMenu(
                                 true
                             )
+
                             OpenAccountsActions.CLIENT_SELECTED -> {
                                 viewmodel.updateShowClientDropdownMenu(false)
                                 viewmodel.updateClientSelected(value)
                                 viewmodel.updateQueryClientName("")
                             }
+
                             OpenAccountsActions.ADD_NEW_CURRENT_ACCOUNT -> {
                                 viewmodel.tryAddCurrentAccount()
                             }
+
                             OpenAccountsActions.DISMISS -> {
                                 viewmodel.updateShowAddCurrentAccountDialog(false)
                                 viewmodel.cleanData()
                             }
+
                             OpenAccountsActions.CLOSE_CLIENT_LIST -> {
                                 viewmodel.updateShowClientDropdownMenu(
                                     false
                                 )
                                 viewmodel.updateQueryClientName("")
                             }
+
                             OpenAccountsActions.CHANGE_QUERY -> viewmodel.updateQueryClientName(
                                 value
                             )
