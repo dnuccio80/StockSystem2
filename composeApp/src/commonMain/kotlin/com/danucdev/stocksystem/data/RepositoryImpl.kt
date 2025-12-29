@@ -5,6 +5,7 @@ import com.danucdev.stocksystem.domain.Repository
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.ConcessionModel
 import com.danucdev.stocksystem.domain.models.CurrentAccountModel
+import com.danucdev.stocksystem.domain.models.TransactionModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -98,6 +99,24 @@ class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
 
     override suspend fun getSingleCurrentAccountById(accountId: Int): CurrentAccountModel? {
         return db.currentAccountDao().getSingleCurrentAccountById(accountId)?.toDomain()
+    }
+
+    override fun getTransactionsByClientId(clientId: Int): Flow<List<TransactionModel>?> {
+        return db.transactionDao().getTransactionsByClientId(clientId).map { list ->
+            list?.map { transaction -> transaction.toDomain() }
+        }
+    }
+
+    override suspend fun addTransaction(transaction: TransactionModel) {
+        db.transactionDao().addTransaction(transaction.toEntity())
+    }
+
+    override suspend fun deleteTransaction(transaction: TransactionModel) {
+        db.transactionDao().deleteTransaction(transaction.toEntity())
+    }
+
+    override suspend fun updateTransaction(transaction: TransactionModel) {
+        db.transactionDao().updateTransaction(transaction.toEntity())
     }
 
 }
