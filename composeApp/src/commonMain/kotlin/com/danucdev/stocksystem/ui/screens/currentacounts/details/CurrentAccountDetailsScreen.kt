@@ -61,6 +61,7 @@ import com.danucdev.stocksystem.ui.core.ConfirmDialog
 import com.danucdev.stocksystem.ui.core.MoneyTextField
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 import com.danucdev.stocksystem.ui.core.TextFieldItem
+import com.danucdev.stocksystem.ui.screens.clients.ClientDataActions
 import com.danucdev.stocksystem.ui.screens.core.PaymentMethods
 import com.danucdev.stocksystem.ui.screens.helpers.DateUtils
 import com.danucdev.stocksystem.ui.screens.helpers.NumberUtils
@@ -81,9 +82,12 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
         val totalAmount by viewmodel.totalAmount.collectAsState()
         val showConfirmDialog by viewmodel.showConfirmDialog.collectAsState()
         val showAddPaymentDialog by viewmodel.showAddPaymentDialog.collectAsState()
+        val showAddDebtDialog by viewmodel.showAddDebtDialog.collectAsState()
         val paymentAmount by viewmodel.paymentAmount.collectAsState()
         val paymentMethod by viewmodel.paymentMethod.collectAsState()
         val showPaymentMethodSelector by viewmodel.showPaymentMethodSelector.collectAsState()
+        val debtAmount by viewmodel.debtAmount.collectAsState()
+        val debtDetails by viewmodel.debtDetails.collectAsState()
 
         LaunchedEffect(true) {
             viewmodel.getDetails(clientRef)
@@ -113,7 +117,7 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        ButtonTextItem("Añadir deuda") { viewmodel.addDebt() }
+                        ButtonTextItem("Añadir deuda") { viewmodel.modifyShowAddDebtDialog(true) }
                         ButtonTextItem("Realizar un pago") {
                             viewmodel.modifyShowAddPaymentDialog(
                                 true
@@ -155,11 +159,11 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                         isAllData = viewmodel.isAllPaymentData(),
                         onActionsDone = { action, value ->
                             when (action) {
-                                DetailsScreenActions.CHANGE_AMOUNT -> viewmodel.modifyAmountPayment(
+                                PaymentActions.CHANGE_AMOUNT -> viewmodel.modifyAmountPayment(
                                     value
                                 )
 
-                                DetailsScreenActions.CHANGE_PAYMENT_METHOD -> {
+                                PaymentActions.CHANGE_PAYMENT_METHOD -> {
                                     val method = if(value == PaymentMethods.Cash.method) {
                                         PaymentMethods.Cash
                                     } else PaymentMethods.MoneyTransfer
@@ -167,24 +171,24 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                                     viewmodel.modifyShowPaymentMethodSelector(false)
                                 }
 
-                                DetailsScreenActions.DISMISS -> viewmodel.modifyShowAddPaymentDialog(
+                                PaymentActions.DISMISS -> viewmodel.modifyShowAddPaymentDialog(
                                     false
                                 )
 
-                                DetailsScreenActions.CANCEL -> {
+                                PaymentActions.CANCEL -> {
                                     viewmodel.modifyShowAddPaymentDialog(false)
                                     viewmodel.cleanPaymentData()
                                 }
 
-                                DetailsScreenActions.OPEN_PAYMENT_METHOD_SELECTOR -> viewmodel.modifyShowPaymentMethodSelector(
+                                PaymentActions.OPEN_PAYMENT_METHOD_SELECTOR -> viewmodel.modifyShowPaymentMethodSelector(
                                     true
                                 )
 
-                                DetailsScreenActions.CLOSE_PAYMENT_METHOD_SELECTOR -> viewmodel.modifyShowPaymentMethodSelector(
+                                PaymentActions.CLOSE_PAYMENT_METHOD_SELECTOR -> viewmodel.modifyShowPaymentMethodSelector(
                                     false
                                 )
 
-                                DetailsScreenActions.PAYMENT_DONE -> {
+                                PaymentActions.PAYMENT_DONE -> {
                                     viewmodel.addPayment()
                                     viewmodel.modifyShowAddPaymentDialog(false)
                                     viewmodel.cleanPaymentData()
@@ -193,13 +197,121 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                         },
                     )
                 }
+                if(showAddDebtDialog) {
+                    AddDebtDialog(
+                        amount = debtAmount,
+                        details = debtDetails,
+                        isAllData = viewmodel.isAllDebtData(),
+                        onActionsDone = {action, value ->
+                            when(action) {
+                                DebtActions.CHANGE_AMOUNT -> viewmodel.modifyDebtAmount(value)
+                                DebtActions.CHANGE_DETAILS -> viewmodel.modifyDebtDetails(value)
+                                DebtActions.DISMISS -> viewmodel.modifyShowAddDebtDialog(false)
+                                DebtActions.CANCEL -> {
+                                    viewmodel.modifyShowAddDebtDialog(false)
+                                    viewmodel.cleanDebtData()
+                                }
+                                DebtActions.ADD_DEBT -> {
+                                    viewmodel.addDebt()
+                                    viewmodel.modifyShowAddDebtDialog(false)
+                                    viewmodel.cleanDebtData()
+                                }
+                            }
+
+                        }
+                    )
+                }
             }
         }
     }
 }
 
-enum class DetailsScreenActions {
+enum class PaymentActions {
     CHANGE_AMOUNT, CHANGE_PAYMENT_METHOD, DISMISS, CANCEL, OPEN_PAYMENT_METHOD_SELECTOR, CLOSE_PAYMENT_METHOD_SELECTOR, PAYMENT_DONE
+}
+
+enum class DebtActions {
+    CHANGE_AMOUNT, CHANGE_DETAILS, DISMISS, CANCEL, ADD_DEBT
+}
+
+@Composable
+private fun AddDebtDialog(
+    amount:String,
+    details:String,
+    isAllData: Boolean,
+    onActionsDone: (DebtActions, String) -> Unit
+){
+    val focusRequester = remember { FocusRequester() }
+    var showError by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
+    Dialog(
+        onDismissRequest = { onActionsDone(DebtActions.DISMISS, "") },
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = DarkMenuBackground
+            ),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(32.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CardTitle("Agregar una deuda")
+                }
+                Spacer(modifier = Modifier.size(0.dp))
+                MoneyTextField(
+                    amount = amount.toLongOrNull() ?: 0,
+                    label = "Monto",
+                    onAmountChange = {
+                        onActionsDone(
+                            DebtActions.CHANGE_AMOUNT,
+                            it.toString()
+                        )
+                    },
+                    focusRequester = focusRequester,
+                    enabled = true
+                )
+                TextFieldItem(details, label = "Detalles", onClick = {}) { input ->
+                    val newInput = input.replaceFirstChar { char ->
+                        if (char.isLowerCase()) char.titlecase() else char.toString()
+                    }
+                    onActionsDone(DebtActions.CHANGE_DETAILS, newInput)
+                }
+
+                AnimatedVisibility(showError) {
+                    Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                }
+                Spacer(modifier = Modifier.size(0.dp))
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    AcceptDeclineButtons(
+                        acceptButtonColor = Color.Green.copy(alpha = .6f),
+                        onAcceptButtonClick = {
+                            if (isAllData) {
+                                showError = false
+                                onActionsDone(DebtActions.ADD_DEBT, "")
+                            } else {
+                                showError = true
+                            }
+                        },
+                        onDeclineButtonClick = { onActionsDone(DebtActions.CANCEL, "") }
+                    )
+                }
+
+            }
+        }
+    }
 }
 
 @Composable
@@ -208,7 +320,7 @@ private fun AddPaymentDialog(
     paymentMethod: String,
     showPaymentMethodSelector: Boolean,
     isAllData: Boolean,
-    onActionsDone: (DetailsScreenActions, String) -> Unit,
+    onActionsDone: (PaymentActions, String) -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     var showError by remember { mutableStateOf(false) }
@@ -223,7 +335,7 @@ private fun AddPaymentDialog(
     }
 
     Dialog(
-        onDismissRequest = { onActionsDone(DetailsScreenActions.DISMISS, "") },
+        onDismissRequest = { onActionsDone(PaymentActions.DISMISS, "") },
     ) {
         Card(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -248,7 +360,7 @@ private fun AddPaymentDialog(
                     label = "Monto",
                     onAmountChange = {
                         onActionsDone(
-                            DetailsScreenActions.CHANGE_AMOUNT,
+                            PaymentActions.CHANGE_AMOUNT,
                             it.toString()
                         )
                     },
@@ -264,7 +376,7 @@ private fun AddPaymentDialog(
                         trailingIcon = Icons.Filled.KeyboardArrowDown,
                         onClick = {
                             onActionsDone(
-                                DetailsScreenActions.OPEN_PAYMENT_METHOD_SELECTOR,
+                                PaymentActions.OPEN_PAYMENT_METHOD_SELECTOR,
                                 ""
                             )
                         }
@@ -274,12 +386,12 @@ private fun AddPaymentDialog(
                         show = showPaymentMethodSelector,
                         onDismiss = {
                             onActionsDone(
-                                DetailsScreenActions.CLOSE_PAYMENT_METHOD_SELECTOR,
+                                PaymentActions.CLOSE_PAYMENT_METHOD_SELECTOR,
                                 ""
                             )
                         },
                         onPaymentMethodChosen = { payment ->
-                            onActionsDone(DetailsScreenActions.CHANGE_PAYMENT_METHOD, payment)
+                            onActionsDone(PaymentActions.CHANGE_PAYMENT_METHOD, payment)
                         },
                     )
                 }
@@ -296,12 +408,12 @@ private fun AddPaymentDialog(
                         onAcceptButtonClick = {
                             if (isAllData) {
                                 showError = false
-                                onActionsDone(DetailsScreenActions.PAYMENT_DONE, "")
+                                onActionsDone(PaymentActions.PAYMENT_DONE, "")
                             } else {
                                 showError = true
                             }
                         },
-                        onDeclineButtonClick = { onActionsDone(DetailsScreenActions.CANCEL, "") }
+                        onDeclineButtonClick = { onActionsDone(PaymentActions.CANCEL, "") }
                     )
                 }
 

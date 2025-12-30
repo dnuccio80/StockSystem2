@@ -59,8 +59,17 @@ class CurrentAccountsDetailsViewModel(
     private val _showAddPaymentDialog = MutableStateFlow(false)
     val showAddPaymentDialog:StateFlow<Boolean> = _showAddPaymentDialog
 
+    private val _showAddDebtDialog = MutableStateFlow(false)
+    val showAddDebtDialog:StateFlow<Boolean> = _showAddDebtDialog
+
     private val _paymentAmount = MutableStateFlow("")
     val paymentAmount:StateFlow<String> = _paymentAmount
+
+    private val _debtAmount = MutableStateFlow("")
+    val debtAmount:StateFlow<String> = _debtAmount
+
+    private val _debtDetails = MutableStateFlow("")
+    val debtDetails:StateFlow<String> = _debtDetails
 
     private val _paymentMethod:MutableStateFlow<PaymentMethods?> = MutableStateFlow(null)
     val paymentMethod:StateFlow<PaymentMethods?> = _paymentMethod
@@ -80,8 +89,8 @@ class CurrentAccountsDetailsViewModel(
     fun addDebt() {
         val newTrans = TransactionModel(
             clientId = accountDetails.value!!.id,
-            amount = "10000",
-            details = "Turno con luz",
+            amount = debtAmount.value,
+            details = debtDetails.value,
             date = LocalDate.now()
         )
 
@@ -105,6 +114,8 @@ class CurrentAccountsDetailsViewModel(
 
     fun isAllPaymentData():Boolean = paymentAmount.value.isNotBlank() && paymentMethod.value != null
 
+    fun isAllDebtData():Boolean = debtAmount.value.isNotBlank() && debtDetails.value.isNotBlank()
+
     fun modifyShowPaymentMethodSelector(show:Boolean) {
         _showPaymentMethodSelector.value = show
     }
@@ -116,7 +127,11 @@ class CurrentAccountsDetailsViewModel(
     fun cleanPaymentData() {
         _paymentAmount.value = ""
         _paymentMethod.value = null
+    }
 
+    fun cleanDebtData() {
+        _debtAmount.value = ""
+        _debtDetails.value = ""
     }
 
     fun modifyShowConfirmDialog(show:Boolean) {
@@ -126,6 +141,18 @@ class CurrentAccountsDetailsViewModel(
 
     fun modifyShowAddPaymentDialog(show:Boolean) {
         _showAddPaymentDialog.value = show
+    }
+
+    fun modifyShowAddDebtDialog(show:Boolean) {
+        _showAddDebtDialog.value = show
+    }
+
+    fun modifyDebtAmount(newValue: String) {
+        _debtAmount.value = newValue
+    }
+
+    fun modifyDebtDetails(newValue: String) {
+        _debtDetails.value = newValue
     }
 
     fun modifyAmountPayment(newValue:String) {
