@@ -119,4 +119,8 @@ class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
         db.transactionDao().updateTransaction(transaction.toEntity())
     }
 
+    override suspend fun deleteAllTransactionsByClientId(clientId: Int) {
+        db.transactionDao().deleteTransactionsByClientId(clientId)
+    }
+
 }

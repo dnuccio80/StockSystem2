@@ -11,5 +11,5 @@ val uiModule = module {
     viewModel { ClientsViewModel(get(), get(), get(), get()) }
     viewModel { ConcessionsViewModel(get(), get(), get(), get()) }
     viewModel { OpenAccountsViewModel(get(), get(), get()) }
-    viewModel { CurrentAccountsDetailsViewModel(get(), get(), get(), get(), get ()) }
+    viewModel { CurrentAccountsDetailsViewModel(get(), get(), get(), get(), get (), get()) }
 }

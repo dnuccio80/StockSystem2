@@ -96,7 +96,6 @@ class OpenAccountsScreen : Screen {
                             CurrentAccountItem(currentAccount) {
                                 if (currentScreen !is CurrentAccountDetailsScreen) navigator.push(
                                     CurrentAccountDetailsScreen(currentAccount.id)
-                                    // Test
                                 )
                             }
                         }
@@ -156,7 +155,7 @@ class OpenAccountsScreen : Screen {
 }
 
 @Composable
-fun CurrentAccountItem(currentAccount: CurrentAccountModel, onAccountClicked: () -> Unit) {
+private fun CurrentAccountItem(currentAccount: CurrentAccountModel, onAccountClicked: () -> Unit) {
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)

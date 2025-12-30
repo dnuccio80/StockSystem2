@@ -28,6 +28,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,8 +44,8 @@ fun CardTitle(text: String) {
 }
 
 @Composable
-fun ScreenTitle(text: String) {
-    Text(text, fontSize = 32.sp, color = DarkFontColor, fontWeight = FontWeight.Bold)
+fun ScreenTitle(text: String, color: Color = DarkFontColor) {
+    Text(text, fontSize = 32.sp, color = color, fontWeight = FontWeight.Bold)
 }
 
 @Composable
@@ -57,7 +58,8 @@ fun ButtonTextItem(text: String, color: Color = CardBackgroundSecond, onClick: (
     Button(
         onClick = { onClick() }, colors = ButtonDefaults.buttonColors(
             backgroundColor = color
-        )
+        ),
+        modifier = Modifier.pointerHoverIcon(PointerIcon.Hand)
     ) {
         Text(text, color = DarkFontColor)
     }

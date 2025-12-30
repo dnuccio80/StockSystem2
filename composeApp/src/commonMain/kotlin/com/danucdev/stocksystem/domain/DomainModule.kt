@@ -12,6 +12,7 @@ import com.danucdev.stocksystem.domain.usecases.currentaccounts.AddNewCurrentAcc
 import com.danucdev.stocksystem.domain.usecases.currentaccounts.GetCurrentAccountDetails
 import com.danucdev.stocksystem.domain.usecases.currentaccounts.GetCurrentAccounts
 import com.danucdev.stocksystem.domain.usecases.transactions.AddTransaction
+import com.danucdev.stocksystem.domain.usecases.transactions.DeleteAllTransactionsByClientId
 import com.danucdev.stocksystem.domain.usecases.transactions.DeleteTransaction
 import com.danucdev.stocksystem.domain.usecases.transactions.GetTransactionsByClientId
 import com.danucdev.stocksystem.domain.usecases.transactions.UpdateTransaction
@@ -41,4 +42,5 @@ val domainModule = module {
     factoryOf(::AddTransaction)
     factoryOf(::DeleteTransaction)
     factoryOf(::UpdateTransaction)
+    factoryOf(::DeleteAllTransactionsByClientId)
 }
