@@ -7,7 +7,8 @@ import java.util.Locale
 
 object NumberUtils {
 
-    fun formatPriceNumber(price:Long):String = "$${NumberFormat.getInstance(Locale("es", "AR")).format(price)}"
+    fun formatPriceNumberWithDollarSign(price:Long):String = "$${NumberFormat.getInstance(Locale("es", "AR")).format(price)}"
+    fun isNegativeNumber(number:Long):Boolean = number < 0
 
 }
 

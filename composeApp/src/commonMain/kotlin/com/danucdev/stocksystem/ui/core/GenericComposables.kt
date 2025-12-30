@@ -21,6 +21,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -30,13 +34,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
+import com.danucdev.stocksystem.ui.screens.helpers.NumberUtils
+import com.danucdev.stocksystem.ui.screens.helpers.NumberUtils.formatPriceNumberWithDollarSign
 
 @Composable
 fun CardTitle(text: String) {
@@ -108,7 +116,7 @@ fun TextFieldItem(
                 trailingIcon,
                 contentDescription = "",
                 tint = Color.White
-            ) else null
+            )
         },
         colors = TextFieldDefaults.colors(
             focusedContainerColor = CardBackgroundSecond.copy(alpha = .6f),
@@ -120,11 +128,65 @@ fun TextFieldItem(
             disabledContainerColor = CardBackgroundSecond,
             disabledTextColor = DarkFontColor
         ),
-
         maxLines = 1,
         singleLine = true,
         enabled = enabled,
         label = { CardBody(label) }
+    )
+}
+
+@Composable
+fun MoneyTextField(
+    amount: Long,
+    label: String,
+    onAmountChange: (Long) -> Unit,
+    focusRequester: FocusRequester? = null,
+    enabled: Boolean = true
+) {
+    var textFieldValue by remember(amount) {
+        val formatted = formatPriceNumberWithDollarSign(amount)
+        mutableStateOf(
+            TextFieldValue(
+                text = formatted,
+                selection = TextRange(formatted.length)
+            )
+        )
+    }
+
+    TextField(
+        value = textFieldValue,
+        onValueChange = { newValue ->
+
+            val numericText = newValue.text.filter { it.isDigit() }
+            val newAmount = numericText.toLongOrNull() ?: 0L
+            val formatted = formatPriceNumberWithDollarSign(newAmount)
+
+            textFieldValue = TextFieldValue(
+                text = formatted,
+                selection = TextRange(formatted.length)
+            )
+            onAmountChange(newAmount)
+        },
+        shape = RoundedCornerShape(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(
+                if (focusRequester != null) Modifier.focusRequester(focusRequester)
+                else Modifier
+            ),
+        label = { CardBody(label) },
+        singleLine = true,
+        enabled = enabled,
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = CardBackgroundSecond.copy(alpha = .6f),
+            unfocusedContainerColor = CardBackgroundSecond,
+            focusedTextColor = DarkFontColor,
+            unfocusedTextColor = DarkFontColor,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledContainerColor = CardBackgroundSecond,
+            disabledTextColor = DarkFontColor
+        )
     )
 }
 

@@ -297,7 +297,7 @@ private fun AddCurrentAccountDialog(
 }
 
 @Composable
-fun ClientDropdownMenuItem(
+private fun ClientDropdownMenuItem(
     list: List<ClientModel>,
     show: Boolean,
     querySearchClient: String,

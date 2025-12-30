@@ -10,10 +10,10 @@ import com.danucdev.stocksystem.domain.usecases.transactions.DeleteAllTransactio
 import com.danucdev.stocksystem.domain.usecases.transactions.DeleteTransaction
 import com.danucdev.stocksystem.domain.usecases.transactions.GetTransactionsByClientId
 import com.danucdev.stocksystem.domain.usecases.transactions.UpdateTransaction
+import com.danucdev.stocksystem.ui.screens.core.PaymentMethods
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import org.koin.core.option.viewModelScopeFactory
 import java.time.LocalDate
 
 class CurrentAccountsDetailsViewModel(
@@ -63,6 +62,12 @@ class CurrentAccountsDetailsViewModel(
     private val _paymentAmount = MutableStateFlow("")
     val paymentAmount:StateFlow<String> = _paymentAmount
 
+    private val _paymentMethod:MutableStateFlow<PaymentMethods?> = MutableStateFlow(null)
+    val paymentMethod:StateFlow<PaymentMethods?> = _paymentMethod
+
+    private val _showPaymentMethodSelector = MutableStateFlow(false)
+    val showPaymentMethodSelector:StateFlow<Boolean> = _showPaymentMethodSelector
+
     fun getDetails(accountId:Int) {
         viewModelScope.launch(Dispatchers.IO) {
             async {
@@ -88,8 +93,8 @@ class CurrentAccountsDetailsViewModel(
     fun addPayment() {
         val newTrans = TransactionModel(
             clientId = accountDetails.value!!.id,
-            amount = "-8000",
-            details = "Pago realizado",
+            amount = "-${paymentAmount.value}",
+            details = "Pago realizado con ${paymentMethod.value?.method}",
             date = LocalDate.now()
         )
 
@@ -98,9 +103,26 @@ class CurrentAccountsDetailsViewModel(
         }
     }
 
+    fun isAllPaymentData():Boolean = paymentAmount.value.isNotBlank() && paymentMethod.value != null
+
+    fun modifyShowPaymentMethodSelector(show:Boolean) {
+        _showPaymentMethodSelector.value = show
+    }
+
+    fun modifyPaymentMethod(newValue: PaymentMethods) {
+        _paymentMethod.value = newValue
+    }
+
+    fun cleanPaymentData() {
+        _paymentAmount.value = ""
+        _paymentMethod.value = null
+
+    }
+
     fun modifyShowConfirmDialog(show:Boolean) {
         _showConfirmDialog.value = show
     }
+
 
     fun modifyShowAddPaymentDialog(show:Boolean) {
         _showAddPaymentDialog.value = show
@@ -114,10 +136,6 @@ class CurrentAccountsDetailsViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             deleteAllTransactionsByClientId(accountDetails.value!!.id)
         }
-    }
-
-    fun cleanPaymentData() {
-        _paymentAmount.value = ""
     }
 
 }
