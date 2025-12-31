@@ -50,6 +50,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkAccentColorText
 import com.danucdev.stocksystem.DarkMenuBackground
+import com.danucdev.stocksystem.NegativeColor
 import com.danucdev.stocksystem.PositiveColor
 import com.danucdev.stocksystem.domain.models.CurrentAccountModel
 import com.danucdev.stocksystem.domain.models.TransactionModel
@@ -58,6 +59,7 @@ import com.danucdev.stocksystem.ui.core.ButtonTextItem
 import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.ConfirmDialog
+import com.danucdev.stocksystem.ui.core.LackOfData
 import com.danucdev.stocksystem.ui.core.MoneyTextField
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 import com.danucdev.stocksystem.ui.core.TextFieldItem
@@ -124,7 +126,7 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                                 true
                             )
                         }
-                        ButtonTextItem("Limpiar todo el registro") {
+                        ButtonTextItem("Limpiar todo el registro", color = NegativeColor) {
                             viewmodel.modifyShowConfirmDialog(
                                 true
                             )
@@ -245,7 +247,6 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                         },
                     )
                 }
-
             }
         }
     }
@@ -321,7 +322,7 @@ private fun AddDebtDialog(
                 }
 
                 AnimatedVisibility(showError) {
-                    Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                    Text("Faltan rellenar datos", color = NegativeColor, fontSize = 12.sp)
                 }
                 Spacer(modifier = Modifier.size(0.dp))
                 if (isEditableDebt) {
@@ -336,7 +337,7 @@ private fun AddDebtDialog(
                         ) {
                             ButtonTextItem(
                                 "Eliminar registro",
-                                color = Color.Red
+                                color = NegativeColor
                             ) { showConfirmDialog = true }
                             AcceptDeclineButtons(
                                 acceptButtonColor = Color.Green.copy(alpha = .6f),
@@ -478,7 +479,7 @@ private fun AddPaymentDialog(
                     )
                 }
                 AnimatedVisibility(showError) {
-                    Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                    LackOfData()
                 }
                 Spacer(modifier = Modifier.size(0.dp))
                 if (isEditablePayment) {
@@ -493,7 +494,7 @@ private fun AddPaymentDialog(
                         ) {
                             ButtonTextItem(
                                 "Eliminar registro",
-                                color = Color.Red
+                                color = NegativeColor
                             ) { showConfirmDialog = true }
                             AcceptDeclineButtons(
                                 acceptButtonColor = Color.Green.copy(alpha = .6f),

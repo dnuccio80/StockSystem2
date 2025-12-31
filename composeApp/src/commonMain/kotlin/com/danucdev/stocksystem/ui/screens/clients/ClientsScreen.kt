@@ -52,12 +52,14 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
+import com.danucdev.stocksystem.NegativeColor
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.ui.core.AcceptDeclineButtons
 import com.danucdev.stocksystem.ui.core.ButtonTextItem
 import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.ConfirmDialog
+import com.danucdev.stocksystem.ui.core.LackOfData
 import com.danucdev.stocksystem.ui.core.TextFieldItem
 import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
 import org.koin.compose.viewmodel.koinViewModel
@@ -349,8 +351,10 @@ private fun ClientDialog(
                     clickable = true,
                     onClick = { onBirthdayClicked() }
                 ) { onBirthdayClicked() }
+                AnimatedVisibility(visible = showError) {
+                    LackOfData()
+                }
                 Spacer(modifier = Modifier.size(0.dp))
-
                 if (editDialog) {
                     Box(
                         modifier = Modifier.fillMaxWidth(),
@@ -363,7 +367,7 @@ private fun ClientDialog(
                         ) {
                             ButtonTextItem(
                                 "Eliminar cliente",
-                                color = Color.Red
+                                color = NegativeColor
                             ) { showConfirmDialog = true }
                             AcceptDeclineButtons(
                                 acceptButtonColor = Color.Green.copy(alpha = .6f),
@@ -403,10 +407,6 @@ private fun ClientDialog(
                             onDeclineButtonClick = { onActionDone(ClientDataActions.DISMISS, "") }
                         )
                     }
-                }
-
-                AnimatedVisibility(visible = showError) {
-                    Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
                 }
                 if(showConfirmDialog) {
                     ConfirmDialog(

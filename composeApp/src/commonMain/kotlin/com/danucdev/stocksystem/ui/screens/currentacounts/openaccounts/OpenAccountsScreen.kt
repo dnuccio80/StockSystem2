@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -46,11 +47,13 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkMenuBackground
+import com.danucdev.stocksystem.NegativeColor
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.CurrentAccountModel
 import com.danucdev.stocksystem.ui.core.AcceptDeclineButtons
 import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
+import com.danucdev.stocksystem.ui.core.LackOfData
 import com.danucdev.stocksystem.ui.core.SearchBarItem
 import com.danucdev.stocksystem.ui.core.TextFieldItem
 import com.danucdev.stocksystem.ui.core.TitleAndButtonRowItemScreenWithSearchBar
@@ -264,13 +267,14 @@ private fun AddCurrentAccountDialog(
                     androidx.compose.animation.AnimatedVisibility(isAlreadyCurrentAccount) {
                         Text(
                             "Ya existe una cuenta corriente de este cliente",
-                            color = Color.Red,
-                            fontSize = 12.sp
+                            color = NegativeColor,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
                 AnimatedVisibility(visible = showError) {
-                    Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                    LackOfData()
                 }
                 Spacer(modifier = Modifier.size(0.dp))
                 Box(

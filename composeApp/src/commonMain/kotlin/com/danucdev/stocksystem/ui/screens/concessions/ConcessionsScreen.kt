@@ -51,12 +51,14 @@ import cafe.adriel.voyager.core.screen.Screen
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
+import com.danucdev.stocksystem.NegativeColor
 import com.danucdev.stocksystem.domain.models.ConcessionModel
 import com.danucdev.stocksystem.ui.core.AcceptDeclineButtons
 import com.danucdev.stocksystem.ui.core.ButtonTextItem
 import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.ConfirmDialog
+import com.danucdev.stocksystem.ui.core.LackOfData
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 import com.danucdev.stocksystem.ui.core.SearchBarItem
 import com.danucdev.stocksystem.ui.core.TextFieldItem
@@ -387,7 +389,7 @@ fun ConcessionDialog(
                         ) {
                             ButtonTextItem(
                                 "Eliminar artículo",
-                                color = Color.Red
+                                color = NegativeColor
                             ) { showConfirmDeleteClientDialog = true }
                             AcceptDeclineButtons(
                                 acceptButtonColor = Color.Green.copy(alpha = .6f),
@@ -410,7 +412,7 @@ fun ConcessionDialog(
 
                     }
                     AnimatedVisibility(visible = showError) {
-                        Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                        LackOfData()
                     }
                 } else {
                     Box(
@@ -436,7 +438,7 @@ fun ConcessionDialog(
                         )
                     }
                     AnimatedVisibility(visible = showError) {
-                        Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                        LackOfData()
                     }
                 }
 

@@ -43,6 +43,7 @@ import androidx.compose.ui.window.Dialog
 import com.danucdev.stocksystem.CardBackgroundSecond
 import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
+import com.danucdev.stocksystem.NegativeColor
 import com.danucdev.stocksystem.ui.screens.helpers.NumberUtils
 import com.danucdev.stocksystem.ui.screens.helpers.NumberUtils.formatPriceNumberWithDollarSign
 
@@ -81,6 +82,11 @@ fun AccentText(text: String, color: Color = Color.Green.copy(.6f)) {
         color = color,
         fontWeight = FontWeight.Bold
     )
+}
+
+@Composable
+fun LackOfData() {
+    Text("Faltan rellenar datos", color = NegativeColor, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
 }
 
 @Composable
@@ -289,7 +295,7 @@ fun ConfirmDialog(text: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
             ) {
                 CardBody(text)
                 AcceptDeclineButtons(
-                    acceptButtonColor = Color.Red.copy(alpha = .6f),
+                    acceptButtonColor = NegativeColor,
                     acceptText = "Eliminar",
                     onAcceptButtonClick = { onConfirm() },
                     onDeclineButtonClick = { onDismiss() }
