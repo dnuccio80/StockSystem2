@@ -87,6 +87,7 @@ class OpenAccountsViewModel(
         val client = clientsList.value.first { it.name == clientName.value }
         val newCurrentAccount = CurrentAccountModel(
             id = client.id,
+            clientId =  client.id,
             clientName = client.name,
             amount = "0"
         )

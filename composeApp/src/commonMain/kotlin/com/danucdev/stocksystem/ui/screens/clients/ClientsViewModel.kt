@@ -10,6 +10,7 @@ import com.danucdev.stocksystem.domain.usecases.clients.UpdateClientData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -106,13 +107,17 @@ class ClientsViewModel(
         }
     }
 
-    fun deleteClientData(clientId:Int) {
+    fun deleteClientData() {
         viewModelScope.launch(Dispatchers.IO) {
-            deleteClient(clientId)
+            async {
+                deleteClient(_clientId.value)
+            }.await()
+            cleanDialogData()
         }
     }
 
     fun cleanDialogData() {
+        _clientId.value = 0
         _clientName.value = ""
         _clientLastName.value = ""
         _phoneNumber.value = ""

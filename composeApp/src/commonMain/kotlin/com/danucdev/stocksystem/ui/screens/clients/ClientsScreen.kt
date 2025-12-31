@@ -2,6 +2,7 @@ package com.danucdev.stocksystem.ui.screens.clients
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +43,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -51,6 +54,7 @@ import com.danucdev.stocksystem.DarkFontColor
 import com.danucdev.stocksystem.DarkMenuBackground
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.ui.core.AcceptDeclineButtons
+import com.danucdev.stocksystem.ui.core.ButtonTextItem
 import com.danucdev.stocksystem.ui.core.CardBody
 import com.danucdev.stocksystem.ui.core.CardTitle
 import com.danucdev.stocksystem.ui.core.ConfirmDialog
@@ -63,7 +67,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-class ClientsScreen:Screen {
+class ClientsScreen : Screen {
     @Composable
     override fun Content() {
         val viewmodel = koinViewModel<ClientsViewModel>()
@@ -98,7 +102,6 @@ class ClientsScreen:Screen {
                         clientsList.forEach { client ->
                             ClientItem(
                                 client = client,
-                                onDeleteClient = { viewmodel.deleteClientData(client.id) },
                                 onModifyClient = {
                                     viewmodel.assignClientData(client)
                                     viewmodel.showEditClientDialog(true)
@@ -137,6 +140,7 @@ class ClientsScreen:Screen {
                                 }
 
                                 ClientDataActions.UPDATE_DATA -> {}
+                                ClientDataActions.DELETE_CLIENT -> { }
                             }
                         }
                     )
@@ -170,6 +174,11 @@ class ClientsScreen:Screen {
                                     viewmodel.updateClient()
                                     viewmodel.cleanDialogData()
                                 }
+
+                                ClientDataActions.DELETE_CLIENT -> {
+                                    viewmodel.showEditClientDialog(false)
+                                    viewmodel.deleteClientData()
+                                }
                             }
                         })
                 }
@@ -184,128 +193,6 @@ class ClientsScreen:Screen {
     }
 
 }
-
-@Composable
-fun ClientetelasScreen() {
-
-//    val viewmodel = koinViewModel<ClientsViewModel>()
-//
-//    val clientName by viewmodel.clientName.collectAsState()
-//    val clientLastname by viewmodel.clientLastName.collectAsState()
-//    val phoneNumber by viewmodel.phoneNumber.collectAsState()
-//    val showAddClientDialog by viewmodel.showAddClientDialog.collectAsState()
-//    val showEditClientDialog by viewmodel.showEditClientDialog.collectAsState()
-//    val clientsList by viewmodel.allClients.collectAsState()
-//    val birthDate by viewmodel.birthDate.collectAsState()
-//    val queryClientName by viewmodel.queryClientName.collectAsState()
-//    val showBirthdayDialog by viewmodel.showBirthdayDialog.collectAsState()
-//
-//
-//    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent)) {
-//        Column(
-//            modifier = Modifier.fillMaxWidth(),
-//            verticalArrangement = Arrangement.spacedBy(16.dp)
-//        ) {
-//            TitleAndButtonRowItemScreenWithSearchBar(
-//                title = "Clientes",
-//                buttonText = "Agregar Cliente",
-//                onButtonClick = { viewmodel.showAddClientDialog(true) },
-//                query = queryClientName,
-//                onSearchValueChange = { viewmodel.updateQueryClientName(it) }
-//            )
-//            Column(
-//                modifier = Modifier.verticalScroll(rememberScrollState()),
-//                verticalArrangement = Arrangement.spacedBy(16.dp)
-//            ) {
-//                if (clientsList.isNotEmpty()) {
-//                    clientsList.forEach { client ->
-//                        ClientItem(
-//                            client = client,
-//                            onDeleteClient = { viewmodel.deleteClientData(client.id) },
-//                            onModifyClient = {
-//                                viewmodel.assignClientData(client)
-//                                viewmodel.showEditClientDialog(true)
-//                            }
-//                        )
-//                    }
-//                } else {
-//                    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)) {
-//                        CardBody("No hay clientes para mostrar")
-//                    }
-//                }
-//            }
-//            // Add new client
-//            if (showAddClientDialog) {
-//                ClientDialog(
-//                    clientName = clientName,
-//                    editDialog = false,
-//                    clientLastname = clientLastname,
-//                    birthday = birthDate,
-//                    phoneNumber = phoneNumber,
-//                    isAllData = viewmodel.isAllData(),
-//                    onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
-//                    onActionDone = { action, value ->
-//                        when (action) {
-//                            ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
-//                            ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
-//                                value
-//                            )
-//
-//                            ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
-//                            ClientDataActions.DISMISS -> viewmodel.showAddClientDialog(false)
-//                            ClientDataActions.ADD_CLIENT -> {
-//                                viewmodel.showAddClientDialog(false)
-//                                viewmodel.addNewClient()
-//                                viewmodel.cleanDialogData()
-//                            }
-//
-//                            ClientDataActions.UPDATE_DATA -> {}
-//                        }
-//                    }
-//                )
-//            }
-//            // Edit Client
-//            if (showEditClientDialog) {
-//                ClientDialog(
-//                    clientName = clientName,
-//                    editDialog = true,
-//                    clientLastname = clientLastname,
-//                    birthday = birthDate,
-//                    phoneNumber = phoneNumber,
-//                    isAllData = viewmodel.isAllData(),
-//                    onBirthdayClicked = { viewmodel.updateShowBirthdayDialog(true) },
-//                    onActionDone = { action, value ->
-//                        when (action) {
-//                            ClientDataActions.MODIFY_NAME -> viewmodel.modifyClientName(value)
-//                            ClientDataActions.MODIFY_LASTNAME -> viewmodel.modifyClientLastName(
-//                                value
-//                            )
-//
-//                            ClientDataActions.MODIFY_PHONE -> viewmodel.modifyPhoneNumber(value)
-//                            ClientDataActions.DISMISS -> {
-//                                viewmodel.showEditClientDialog(false)
-//                                viewmodel.cleanDialogData()
-//                            }
-//
-//                            ClientDataActions.ADD_CLIENT -> {}
-//                            ClientDataActions.UPDATE_DATA -> {
-//                                viewmodel.showEditClientDialog(false)
-//                                viewmodel.updateClient()
-//                                viewmodel.cleanDialogData()
-//                            }
-//                        }
-//                    })
-//            }
-//
-//            BirthdayDatePicker(showBirthdayDialog, onDateSelected = { selected ->
-//                viewmodel.modifyBirthDate(selected)
-//            }) {
-//                viewmodel.updateShowBirthdayDialog(false)
-//            }
-//        }
-//    }
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -356,14 +243,15 @@ fun BirthdayDatePicker(
 @Composable
 private fun ClientItem(
     client: ClientModel,
-    onDeleteClient: () -> Unit,
     onModifyClient: () -> Unit,
 ) {
 
-    var showConfirmDeleteClientDialog by remember { mutableStateOf(false) }
-
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 64.dp)
+            .clickable { onModifyClient() }
+            .pointerHoverIcon(PointerIcon.Hand),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = CardBackgroundSecond
@@ -375,48 +263,13 @@ private fun ClientItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CardBody(client.name)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                CardBody("id: ${client.id}")
-                CardBody(client.phone)
-                Button(
-                    shape = CircleShape,
-                    onClick = { onModifyClient() },
-                    modifier = Modifier.size(35.dp),
-                    contentPadding = PaddingValues(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkMenuBackground)
-                ) {
-                    Icon(Icons.Filled.Edit, contentDescription = "", tint = DarkFontColor)
-                }
-                Button(
-                    shape = CircleShape,
-                    onClick = { showConfirmDeleteClientDialog = true },
-                    modifier = Modifier.size(35.dp),
-                    contentPadding = PaddingValues(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkMenuBackground)
-                ) {
-                    Icon(Icons.Filled.Delete, contentDescription = "", tint = DarkFontColor)
-                }
-            }
-
+            CardBody("Teléfono: ${client.phone}")
         }
-        if (showConfirmDeleteClientDialog) {
-            ConfirmDialog(
-                "¿Seguro que querés eliminar a este cliente?",
-                onConfirm = {
-                    onDeleteClient()
-                    showConfirmDeleteClientDialog = false
-                },
-                onDismiss = { showConfirmDeleteClientDialog = false })
-        }
-
     }
 }
 
 enum class ClientDataActions {
-    MODIFY_NAME, MODIFY_LASTNAME, MODIFY_PHONE, DISMISS, ADD_CLIENT, UPDATE_DATA
+    MODIFY_NAME, MODIFY_LASTNAME, MODIFY_PHONE, DISMISS, ADD_CLIENT, UPDATE_DATA, DELETE_CLIENT
 }
 
 @Composable
@@ -442,6 +295,8 @@ private fun ClientDialog(
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
+
+    var showConfirmDialog by remember { mutableStateOf(false) }
 
     Dialog(
         onDismissRequest = { onActionDone(ClientDataActions.DISMISS, "") },
@@ -495,29 +350,73 @@ private fun ClientDialog(
                     onClick = { onBirthdayClicked() }
                 ) { onBirthdayClicked() }
                 Spacer(modifier = Modifier.size(0.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    AcceptDeclineButtons(
-                        acceptButtonColor = Color.Green.copy(alpha = .6f),
-                        onAcceptButtonClick = {
-                            if (isAllData) {
-                                showError = false
-                                if (editDialog) {
-                                    onActionDone(ClientDataActions.UPDATE_DATA, "")
-                                } else {
-                                    onActionDone(ClientDataActions.ADD_CLIENT, "")
+
+                if (editDialog) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ButtonTextItem(
+                                "Eliminar cliente",
+                                color = Color.Red
+                            ) { showConfirmDialog = true }
+                            AcceptDeclineButtons(
+                                acceptButtonColor = Color.Green.copy(alpha = .6f),
+                                onAcceptButtonClick = {
+                                    if (isAllData) {
+                                        showError = false
+                                        onActionDone(ClientDataActions.UPDATE_DATA, "")
+                                    } else {
+                                        showError = true
+                                    }
+                                },
+                                onDeclineButtonClick = {
+                                    onActionDone(
+                                        ClientDataActions.DISMISS,
+                                        ""
+                                    )
                                 }
-                            } else {
-                                showError = true
-                            }
-                        },
-                        onDeclineButtonClick = { onActionDone(ClientDataActions.DISMISS, "") }
-                    )
+                            )
+                        }
+
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        AcceptDeclineButtons(
+                            acceptButtonColor = Color.Green.copy(alpha = .6f),
+                            onAcceptButtonClick = {
+                                if (isAllData) {
+                                    showError = false
+                                    onActionDone(ClientDataActions.ADD_CLIENT, "")
+                                } else {
+                                    showError = true
+                                }
+                            },
+                            onDeclineButtonClick = { onActionDone(ClientDataActions.DISMISS, "") }
+                        )
+                    }
                 }
+
                 AnimatedVisibility(visible = showError) {
                     Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                }
+                if(showConfirmDialog) {
+                    ConfirmDialog(
+                        "¿Seguro que queres eliminar este cliente? Se borrarán todos sus datos y su cuenta corriente",
+                        onConfirm = {
+                            showConfirmDialog = false
+                            onActionDone(ClientDataActions.DELETE_CLIENT, "")
+                        },
+                        onDismiss = { showConfirmDialog = false }
+                    )
                 }
             }
         }

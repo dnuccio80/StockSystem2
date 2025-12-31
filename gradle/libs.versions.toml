@@ -16,6 +16,7 @@ androidx-sqliteBundled = "2.5.2"
 koinCore = "4.1.0"
 roomRuntimeJvm = "2.8.4"
 navigationCommonDesktop = "2.9.0-beta01"
+sqliteAndroid = "2.6.2"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -43,6 +44,7 @@ androidx-navigation-common-desktop = { group = "androidx.navigation", name = "na
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
+androidx-sqlite-android = { group = "androidx.sqlite", name = "sqlite-android", version.ref = "sqliteAndroid" }
 
 
 [plugins]

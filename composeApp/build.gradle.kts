@@ -37,6 +37,7 @@ kotlin {
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.transitions)
             implementation(libs.voyager.koin)
+
         }
 
         commonTest.dependencies {

@@ -31,27 +31,28 @@ class CurrentAccountsDetailsViewModel(
     private val deleteTransaction: DeleteTransaction,
     private val updateTransaction: UpdateTransaction,
     private val deleteAllTransactionsByClientId: DeleteAllTransactionsByClientId,
-):ViewModel() {
+) : ViewModel() {
 
     private val _transactionDataToModification = MutableStateFlow<TransactionModel?>(null)
 
     private val _isEditableDebt = MutableStateFlow(false)
-    val isEditableDebt:StateFlow<Boolean> = _isEditableDebt
+    val isEditableDebt: StateFlow<Boolean> = _isEditableDebt
 
     private val _isEditablePayment = MutableStateFlow(false)
-    val isEditablePayment:StateFlow<Boolean> = _isEditablePayment
+    val isEditablePayment: StateFlow<Boolean> = _isEditablePayment
 
     private val _accountDetails = MutableStateFlow<CurrentAccountModel?>(null)
-    val accountDetails:StateFlow<CurrentAccountModel?> = _accountDetails
+    val accountDetails: StateFlow<CurrentAccountModel?> = _accountDetails
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val _transactions: StateFlow<List<TransactionModel>?> = accountDetails.filterNotNull().flatMapLatest { account ->
-        getTransactionsByClientId(account.id)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    private val _transactions: StateFlow<List<TransactionModel>?> =
+        accountDetails.filterNotNull().flatMapLatest { account ->
+            getTransactionsByClientId(account.id)
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val transactions = _transactions
 
     private val _isLoading = MutableStateFlow(true)
-    val isLoading:StateFlow<Boolean> = _isLoading
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _totalAmount: StateFlow<Long> = transactions.filterNotNull().map { list ->
         list.sumOf { transaction ->
@@ -61,30 +62,30 @@ class CurrentAccountsDetailsViewModel(
     val totalAmount = _totalAmount
 
     private val _showConfirmDeleteAllRegistryDialog = MutableStateFlow(false)
-    val showConfirmDeleteAllRegistryDialog:StateFlow<Boolean> = _showConfirmDeleteAllRegistryDialog
+    val showConfirmDeleteAllRegistryDialog: StateFlow<Boolean> = _showConfirmDeleteAllRegistryDialog
 
     private val _showAddPaymentDialog = MutableStateFlow(false)
-    val showAddPaymentDialog:StateFlow<Boolean> = _showAddPaymentDialog
+    val showAddPaymentDialog: StateFlow<Boolean> = _showAddPaymentDialog
 
     private val _showAddDebtDialog = MutableStateFlow(false)
-    val showAddDebtDialog:StateFlow<Boolean> = _showAddDebtDialog
+    val showAddDebtDialog: StateFlow<Boolean> = _showAddDebtDialog
 
     private val _paymentAmount = MutableStateFlow("")
-    val paymentAmount:StateFlow<String> = _paymentAmount
+    val paymentAmount: StateFlow<String> = _paymentAmount
 
     private val _debtAmount = MutableStateFlow("")
-    val debtAmount:StateFlow<String> = _debtAmount
+    val debtAmount: StateFlow<String> = _debtAmount
 
     private val _debtDetails = MutableStateFlow("")
-    val debtDetails:StateFlow<String> = _debtDetails
+    val debtDetails: StateFlow<String> = _debtDetails
 
-    private val _paymentMethod:MutableStateFlow<PaymentMethods?> = MutableStateFlow(null)
-    val paymentMethod:StateFlow<PaymentMethods?> = _paymentMethod
+    private val _paymentMethod: MutableStateFlow<PaymentMethods?> = MutableStateFlow(null)
+    val paymentMethod: StateFlow<PaymentMethods?> = _paymentMethod
 
     private val _showPaymentMethodSelector = MutableStateFlow(false)
-    val showPaymentMethodSelector:StateFlow<Boolean> = _showPaymentMethodSelector
+    val showPaymentMethodSelector: StateFlow<Boolean> = _showPaymentMethodSelector
 
-    fun getDetails(accountId:Int) {
+    fun getDetails(accountId: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             async {
                 _accountDetails.value = getCurrentAccountDetails(accountId)
@@ -119,11 +120,12 @@ class CurrentAccountsDetailsViewModel(
         }
     }
 
-    fun isAllPaymentData():Boolean = paymentAmount.value.isNotBlank() && paymentMethod.value != null
+    fun isAllPaymentData(): Boolean =
+        paymentAmount.value.isNotBlank() && paymentMethod.value != null
 
-    fun isAllDebtData():Boolean = debtAmount.value.isNotBlank() && debtDetails.value.isNotBlank()
+    fun isAllDebtData(): Boolean = debtAmount.value.isNotBlank() && debtDetails.value.isNotBlank()
 
-    fun modifyShowPaymentMethodSelector(show:Boolean) {
+    fun modifyShowPaymentMethodSelector(show: Boolean) {
         _showPaymentMethodSelector.value = show
     }
 
@@ -134,23 +136,25 @@ class CurrentAccountsDetailsViewModel(
     fun cleanPaymentData() {
         _paymentAmount.value = ""
         _paymentMethod.value = null
+        _isEditablePayment.value = false
     }
 
     fun cleanDebtData() {
         _debtAmount.value = ""
         _debtDetails.value = ""
+        _isEditableDebt.value = false
     }
 
-    fun modifyShowConfirmDialog(show:Boolean) {
+    fun modifyShowConfirmDialog(show: Boolean) {
         _showConfirmDeleteAllRegistryDialog.value = show
     }
 
 
-    fun modifyShowAddPaymentDialog(show:Boolean) {
+    fun modifyShowAddPaymentDialog(show: Boolean) {
         _showAddPaymentDialog.value = show
     }
 
-    fun modifyShowAddDebtDialog(show:Boolean) {
+    fun modifyShowAddDebtDialog(show: Boolean) {
         _showAddDebtDialog.value = show
     }
 
@@ -162,7 +166,7 @@ class CurrentAccountsDetailsViewModel(
         _debtDetails.value = newValue
     }
 
-    fun modifyAmountPayment(newValue:String) {
+    fun modifyAmountPayment(newValue: String) {
         _paymentAmount.value = newValue
     }
 
@@ -172,7 +176,7 @@ class CurrentAccountsDetailsViewModel(
         }
     }
 
-    fun assignDebtDataAndShowDialog(debt:TransactionModel) {
+    fun assignDebtDataAndShowDialog(debt: TransactionModel) {
         _isEditableDebt.value = true
         _transactionDataToModification.value = debt
         _debtAmount.value = debt.amount
@@ -180,17 +184,18 @@ class CurrentAccountsDetailsViewModel(
         _showAddDebtDialog.value = true
     }
 
-    fun assignPaymentDataAndShowDialog(payment:TransactionModel) {
+    fun assignPaymentDataAndShowDialog(payment: TransactionModel) {
         _isEditablePayment.value = true
         _transactionDataToModification.value = payment
-        val paymentMethodString =  payment.details.substringAfter("con ")
-        val paymentMethod = if(paymentMethodString == PaymentMethods.Cash.method) PaymentMethods.Cash else PaymentMethods.MoneyTransfer
+        val paymentMethodString = payment.details.substringAfter("con ")
+        val paymentMethod =
+            if (paymentMethodString == PaymentMethods.Cash.method) PaymentMethods.Cash else PaymentMethods.MoneyTransfer
         _paymentAmount.value = payment.amount
         _paymentMethod.value = paymentMethod
         _showAddPaymentDialog.value = true
     }
 
-    fun clearDebtDataAndTransactionDataToModify() {
+    private fun clearDebtDataAndTransactionDataToModify() {
         _transactionDataToModification.value = null
         _debtAmount.value = ""
         _debtDetails.value = ""
@@ -198,7 +203,7 @@ class CurrentAccountsDetailsViewModel(
         _isEditableDebt.value = false
     }
 
-    fun clearPaymentDataAndTransactionDataToModify() {
+    private fun clearPaymentDataAndTransactionDataToModify() {
         _transactionDataToModification.value = null
         _paymentAmount.value = ""
         _paymentMethod.value = null
@@ -207,23 +212,39 @@ class CurrentAccountsDetailsViewModel(
     }
 
     fun modifyDebtOnDataLayer() {
-        val transaction = _transactionDataToModification.value?.copy(amount = debtAmount.value, details = debtDetails.value)
+        val transaction = _transactionDataToModification.value?.copy(
+            amount = debtAmount.value,
+            details = debtDetails.value
+        )
         viewModelScope.launch(Dispatchers.IO) {
-            updateTransaction(transaction!!)
+            async {
+                updateTransaction(transaction!!)
+            }.await()
+            clearDebtDataAndTransactionDataToModify()
         }
 
     }
 
     fun modifyPaymentOnDataLayer() {
-        val transaction = _transactionDataToModification.value?.copy(amount = paymentAmount.value, details = "Pago realizado con ${_paymentMethod.value?.method}")
+        val transaction = _transactionDataToModification.value?.copy(
+            amount = "-${paymentAmount.value}",
+            details = "Pago realizado con ${_paymentMethod.value?.method}"
+        )
         viewModelScope.launch(Dispatchers.IO) {
-            updateTransaction(transaction!!)
+            async {
+                updateTransaction(transaction!!)
+            }.await()
+            clearPaymentDataAndTransactionDataToModify()
         }
     }
 
     fun deleteTransaction() {
         viewModelScope.launch(Dispatchers.IO) {
-            _transactionDataToModification.value?.let { deleteTransaction(it) }
+            async {
+                _transactionDataToModification.value?.let { deleteTransaction(it) }
+            }.await()
+            clearPaymentDataAndTransactionDataToModify()
+            clearDebtDataAndTransactionDataToModify()
         }
     }
 }
