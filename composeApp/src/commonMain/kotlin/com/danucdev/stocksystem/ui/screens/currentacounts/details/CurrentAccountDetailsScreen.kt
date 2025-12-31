@@ -61,7 +61,6 @@ import com.danucdev.stocksystem.ui.core.ConfirmDialog
 import com.danucdev.stocksystem.ui.core.MoneyTextField
 import com.danucdev.stocksystem.ui.core.ScreenTitle
 import com.danucdev.stocksystem.ui.core.TextFieldItem
-import com.danucdev.stocksystem.ui.screens.clients.ClientDataActions
 import com.danucdev.stocksystem.ui.screens.core.PaymentMethods
 import com.danucdev.stocksystem.ui.screens.helpers.DateUtils
 import com.danucdev.stocksystem.ui.screens.helpers.NumberUtils
@@ -80,7 +79,7 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
         val isLoading by viewmodel.isLoading.collectAsState()
         val transactions by viewmodel.transactions.collectAsState()
         val totalAmount by viewmodel.totalAmount.collectAsState()
-        val showConfirmDialog by viewmodel.showConfirmDialog.collectAsState()
+        val showConfirmDeleteAllRegistryDialog by viewmodel.showConfirmDeleteAllRegistryDialog.collectAsState()
         val showAddPaymentDialog by viewmodel.showAddPaymentDialog.collectAsState()
         val showAddDebtDialog by viewmodel.showAddDebtDialog.collectAsState()
         val paymentAmount by viewmodel.paymentAmount.collectAsState()
@@ -88,6 +87,8 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
         val showPaymentMethodSelector by viewmodel.showPaymentMethodSelector.collectAsState()
         val debtAmount by viewmodel.debtAmount.collectAsState()
         val debtDetails by viewmodel.debtDetails.collectAsState()
+        val isEditableDebt by viewmodel.isEditableDebt.collectAsState()
+        val isEditablePayment by viewmodel.isEditablePayment.collectAsState()
 
         LaunchedEffect(true) {
             viewmodel.getDetails(clientRef)
@@ -137,11 +138,16 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         transactions?.forEach { transaction ->
-                            TransactionDetailsItem(transaction)
+                            TransactionDetailsItem(transaction) { isPayment ->
+                                when (isPayment) {
+                                    true -> viewmodel.assignPaymentDataAndShowDialog(transaction)
+                                    false -> viewmodel.assignDebtDataAndShowDialog(transaction)
+                                }
+                            }
                         }
                     }
                 }
-                if (showConfirmDialog) {
+                if (showConfirmDeleteAllRegistryDialog) {
                     ConfirmDialog(
                         "¿Estás seguro de eliminar todo el registro? Eliminarás todo el historial de deudas y pagos del cliente",
                         onConfirm = {
@@ -151,12 +157,48 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                         onDismiss = { viewmodel.modifyShowConfirmDialog(false) },
                     )
                 }
+                if (showAddDebtDialog) {
+                    AddDebtDialog(
+                        amount = debtAmount,
+                        details = debtDetails,
+                        isAllData = viewmodel.isAllDebtData(),
+                        isEditableDebt = isEditableDebt,
+                        onActionsDone = { action, value ->
+                            when (action) {
+                                DebtActions.CHANGE_AMOUNT -> viewmodel.modifyDebtAmount(value)
+                                DebtActions.CHANGE_DETAILS -> viewmodel.modifyDebtDetails(value)
+                                DebtActions.DISMISS -> viewmodel.modifyShowAddDebtDialog(false)
+                                DebtActions.CANCEL -> {
+                                    viewmodel.modifyShowAddDebtDialog(false)
+                                    viewmodel.cleanDebtData()
+                                }
+
+                                DebtActions.ADD_DEBT -> {
+                                    viewmodel.addDebt()
+                                    viewmodel.modifyShowAddDebtDialog(false)
+                                    viewmodel.cleanDebtData()
+                                }
+
+                                DebtActions.ADD_MODIFIED_DEBT -> {
+                                    viewmodel.modifyDebtOnDataLayer()
+                                }
+
+                                DebtActions.DELETE_DEBT -> {
+                                    viewmodel.deleteTransaction()
+                                    viewmodel.modifyShowAddDebtDialog(false)
+                                }
+                            }
+
+                        }
+                    )
+                }
                 if (showAddPaymentDialog) {
                     AddPaymentDialog(
                         amount = paymentAmount,
                         paymentMethod = paymentMethod?.method ?: "",
                         showPaymentMethodSelector = showPaymentMethodSelector,
                         isAllData = viewmodel.isAllPaymentData(),
+                        isEditablePayment = isEditablePayment,
                         onActionsDone = { action, value ->
                             when (action) {
                                 PaymentActions.CHANGE_AMOUNT -> viewmodel.modifyAmountPayment(
@@ -164,7 +206,7 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                                 )
 
                                 PaymentActions.CHANGE_PAYMENT_METHOD -> {
-                                    val method = if(value == PaymentMethods.Cash.method) {
+                                    val method = if (value == PaymentMethods.Cash.method) {
                                         PaymentMethods.Cash
                                     } else PaymentMethods.MoneyTransfer
                                     viewmodel.modifyPaymentMethod(method)
@@ -193,62 +235,53 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                                     viewmodel.modifyShowAddPaymentDialog(false)
                                     viewmodel.cleanPaymentData()
                                 }
+
+                                PaymentActions.PAYMENT_MODIFIED_DONE -> viewmodel.modifyPaymentOnDataLayer()
+                                PaymentActions.DELETE_PAYMENT -> {
+                                    viewmodel.deleteTransaction()
+                                    viewmodel.modifyShowAddPaymentDialog(false)
+                                }
                             }
                         },
                     )
                 }
-                if(showAddDebtDialog) {
-                    AddDebtDialog(
-                        amount = debtAmount,
-                        details = debtDetails,
-                        isAllData = viewmodel.isAllDebtData(),
-                        onActionsDone = {action, value ->
-                            when(action) {
-                                DebtActions.CHANGE_AMOUNT -> viewmodel.modifyDebtAmount(value)
-                                DebtActions.CHANGE_DETAILS -> viewmodel.modifyDebtDetails(value)
-                                DebtActions.DISMISS -> viewmodel.modifyShowAddDebtDialog(false)
-                                DebtActions.CANCEL -> {
-                                    viewmodel.modifyShowAddDebtDialog(false)
-                                    viewmodel.cleanDebtData()
-                                }
-                                DebtActions.ADD_DEBT -> {
-                                    viewmodel.addDebt()
-                                    viewmodel.modifyShowAddDebtDialog(false)
-                                    viewmodel.cleanDebtData()
-                                }
-                            }
 
-                        }
-                    )
-                }
             }
         }
     }
 }
 
 enum class PaymentActions {
-    CHANGE_AMOUNT, CHANGE_PAYMENT_METHOD, DISMISS, CANCEL, OPEN_PAYMENT_METHOD_SELECTOR, CLOSE_PAYMENT_METHOD_SELECTOR, PAYMENT_DONE
+    CHANGE_AMOUNT, CHANGE_PAYMENT_METHOD, DISMISS, CANCEL, OPEN_PAYMENT_METHOD_SELECTOR, CLOSE_PAYMENT_METHOD_SELECTOR, PAYMENT_DONE, PAYMENT_MODIFIED_DONE, DELETE_PAYMENT
 }
 
 enum class DebtActions {
-    CHANGE_AMOUNT, CHANGE_DETAILS, DISMISS, CANCEL, ADD_DEBT
+    CHANGE_AMOUNT, CHANGE_DETAILS, DISMISS, CANCEL, ADD_DEBT, ADD_MODIFIED_DEBT, DELETE_DEBT
 }
 
 @Composable
 private fun AddDebtDialog(
-    amount:String,
-    details:String,
+    amount: String,
+    details: String,
     isAllData: Boolean,
-    onActionsDone: (DebtActions, String) -> Unit
-){
+    isEditableDebt: Boolean = false,
+    onActionsDone: (DebtActions, String) -> Unit,
+) {
     val focusRequester = remember { FocusRequester() }
     var showError by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
     Dialog(
-        onDismissRequest = { onActionsDone(DebtActions.DISMISS, "") },
+        onDismissRequest = {
+            onActionsDone(
+                if (isEditableDebt) DebtActions.CANCEL else DebtActions.DISMISS,
+                ""
+            )
+        },
     ) {
         Card(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -265,7 +298,7 @@ private fun AddDebtDialog(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CardTitle("Agregar una deuda")
+                    CardTitle(if (isEditableDebt) "Modificar deuda" else "Agregar nueva deuda")
                 }
                 Spacer(modifier = Modifier.size(0.dp))
                 MoneyTextField(
@@ -291,23 +324,65 @@ private fun AddDebtDialog(
                     Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
                 }
                 Spacer(modifier = Modifier.size(0.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    AcceptDeclineButtons(
-                        acceptButtonColor = Color.Green.copy(alpha = .6f),
-                        onAcceptButtonClick = {
-                            if (isAllData) {
-                                showError = false
-                                onActionsDone(DebtActions.ADD_DEBT, "")
-                            } else {
-                                showError = true
-                            }
+                if (isEditableDebt) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ButtonTextItem(
+                                "Eliminar registro",
+                                color = Color.Red
+                            ) { showConfirmDialog = true }
+                            AcceptDeclineButtons(
+                                acceptButtonColor = Color.Green.copy(alpha = .6f),
+                                onAcceptButtonClick = {
+                                    if (isAllData) {
+                                        showError = false
+                                        onActionsDone(DebtActions.ADD_MODIFIED_DEBT, "")
+                                    } else {
+                                        showError = true
+                                    }
+                                },
+                                onDeclineButtonClick = { onActionsDone(DebtActions.CANCEL, "") }
+                            )
+                        }
+
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        AcceptDeclineButtons(
+                            acceptButtonColor = Color.Green.copy(alpha = .6f),
+                            onAcceptButtonClick = {
+                                if (isAllData) {
+                                    showError = false
+                                    onActionsDone(DebtActions.ADD_DEBT, "")
+                                } else {
+                                    showError = true
+                                }
+                            },
+                            onDeclineButtonClick = { onActionsDone(DebtActions.CANCEL, "") }
+                        )
+                    }
+                }
+                if (showConfirmDialog) {
+                    ConfirmDialog(
+                        "¿Seguro que querés eliminar el registro?",
+                        onConfirm = {
+                            showConfirmDialog = false
+                            onActionsDone(DebtActions.DELETE_DEBT, "")
                         },
-                        onDeclineButtonClick = { onActionsDone(DebtActions.CANCEL, "") }
+                        onDismiss = { showConfirmDialog = false }
                     )
                 }
+
 
             }
         }
@@ -320,10 +395,12 @@ private fun AddPaymentDialog(
     paymentMethod: String,
     showPaymentMethodSelector: Boolean,
     isAllData: Boolean,
+    isEditablePayment: Boolean = false,
     onActionsDone: (PaymentActions, String) -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     var showError by remember { mutableStateOf(false) }
+    var showConfirmDialog by remember { mutableStateOf(false) }
 
     val paymentMethods = listOf(
         PaymentMethods.Cash.method,
@@ -335,7 +412,12 @@ private fun AddPaymentDialog(
     }
 
     Dialog(
-        onDismissRequest = { onActionsDone(PaymentActions.DISMISS, "") },
+        onDismissRequest = {
+            onActionsDone(
+                if (isEditablePayment) PaymentActions.CANCEL else PaymentActions.DISMISS,
+                ""
+            )
+        },
     ) {
         Card(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
@@ -352,7 +434,7 @@ private fun AddPaymentDialog(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CardTitle("Agregar un pago")
+                    CardTitle(if (isEditablePayment) "Modificar pago" else "Agregar un pago")
                 }
                 Spacer(modifier = Modifier.size(0.dp))
                 MoneyTextField(
@@ -399,24 +481,63 @@ private fun AddPaymentDialog(
                     Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
                 }
                 Spacer(modifier = Modifier.size(0.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    AcceptDeclineButtons(
-                        acceptButtonColor = Color.Green.copy(alpha = .6f),
-                        onAcceptButtonClick = {
-                            if (isAllData) {
-                                showError = false
-                                onActionsDone(PaymentActions.PAYMENT_DONE, "")
-                            } else {
-                                showError = true
-                            }
+                if (isEditablePayment) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ButtonTextItem(
+                                "Eliminar registro",
+                                color = Color.Red
+                            ) { showConfirmDialog = true }
+                            AcceptDeclineButtons(
+                                acceptButtonColor = Color.Green.copy(alpha = .6f),
+                                onAcceptButtonClick = {
+                                    if (isAllData) {
+                                        showError = false
+                                        onActionsDone(PaymentActions.PAYMENT_MODIFIED_DONE, "")
+                                    } else {
+                                        showError = true
+                                    }
+                                },
+                                onDeclineButtonClick = { onActionsDone(PaymentActions.CANCEL, "") }
+                            )
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        AcceptDeclineButtons(
+                            acceptButtonColor = Color.Green.copy(alpha = .6f),
+                            onAcceptButtonClick = {
+                                if (isAllData) {
+                                    showError = false
+                                    onActionsDone(PaymentActions.PAYMENT_DONE, "")
+                                } else {
+                                    showError = true
+                                }
+                            },
+                            onDeclineButtonClick = { onActionsDone(PaymentActions.CANCEL, "") }
+                        )
+                    }
+                }
+                if (showConfirmDialog) {
+                    ConfirmDialog(
+                        text = "¿Seguro que querés eliminar el registro?",
+                        onConfirm = {
+                            onActionsDone(PaymentActions.DELETE_PAYMENT, "")
+                            showConfirmDialog = false
                         },
-                        onDeclineButtonClick = { onActionsDone(PaymentActions.CANCEL, "") }
+                        onDismiss = { showConfirmDialog = false }
                     )
                 }
-
             }
         }
     }
@@ -447,18 +568,18 @@ private fun TransactionDropdownMenuItem(
 }
 
 @Composable
-private fun TransactionDetailsItem(transaction: TransactionModel) {
+private fun TransactionDetailsItem(transaction: TransactionModel, onClick: (Boolean) -> Unit) {
 
     val isPayment = NumberUtils.isNegativeNumber(transaction.amount.toLong())
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp)
-            .clickable { }.pointerHoverIcon(
+            .clickable { onClick(isPayment) }.pointerHoverIcon(
                 PointerIcon.Hand
             ),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if(isPayment) PositiveColor else CardBackgroundSecond
+            containerColor = if (isPayment) PositiveColor else CardBackgroundSecond
         )
     ) {
         Row(
@@ -504,7 +625,7 @@ private fun Header(
             )
             ScreenTitle("Cuenta corriente: ${client.clientName}")
         }
-        if(positiveAmount) {
+        if (positiveAmount) {
             val absAmount = abs(totalAmount)
             ScreenTitle(
                 "Saldo a favor: ${NumberUtils.formatPriceNumberWithDollarSign(absAmount)}",

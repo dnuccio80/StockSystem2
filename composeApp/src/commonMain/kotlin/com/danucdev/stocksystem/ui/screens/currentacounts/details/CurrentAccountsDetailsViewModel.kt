@@ -31,8 +31,15 @@ class CurrentAccountsDetailsViewModel(
     private val deleteTransaction: DeleteTransaction,
     private val updateTransaction: UpdateTransaction,
     private val deleteAllTransactionsByClientId: DeleteAllTransactionsByClientId,
-
 ):ViewModel() {
+
+    private val _transactionDataToModification = MutableStateFlow<TransactionModel?>(null)
+
+    private val _isEditableDebt = MutableStateFlow(false)
+    val isEditableDebt:StateFlow<Boolean> = _isEditableDebt
+
+    private val _isEditablePayment = MutableStateFlow(false)
+    val isEditablePayment:StateFlow<Boolean> = _isEditablePayment
 
     private val _accountDetails = MutableStateFlow<CurrentAccountModel?>(null)
     val accountDetails:StateFlow<CurrentAccountModel?> = _accountDetails
@@ -53,8 +60,8 @@ class CurrentAccountsDetailsViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0L)
     val totalAmount = _totalAmount
 
-    private val _showConfirmDialog = MutableStateFlow(false)
-    val showConfirmDialog:StateFlow<Boolean> = _showConfirmDialog
+    private val _showConfirmDeleteAllRegistryDialog = MutableStateFlow(false)
+    val showConfirmDeleteAllRegistryDialog:StateFlow<Boolean> = _showConfirmDeleteAllRegistryDialog
 
     private val _showAddPaymentDialog = MutableStateFlow(false)
     val showAddPaymentDialog:StateFlow<Boolean> = _showAddPaymentDialog
@@ -135,7 +142,7 @@ class CurrentAccountsDetailsViewModel(
     }
 
     fun modifyShowConfirmDialog(show:Boolean) {
-        _showConfirmDialog.value = show
+        _showConfirmDeleteAllRegistryDialog.value = show
     }
 
 
@@ -165,4 +172,58 @@ class CurrentAccountsDetailsViewModel(
         }
     }
 
+    fun assignDebtDataAndShowDialog(debt:TransactionModel) {
+        _isEditableDebt.value = true
+        _transactionDataToModification.value = debt
+        _debtAmount.value = debt.amount
+        _debtDetails.value = debt.details
+        _showAddDebtDialog.value = true
+    }
+
+    fun assignPaymentDataAndShowDialog(payment:TransactionModel) {
+        _isEditablePayment.value = true
+        _transactionDataToModification.value = payment
+        val paymentMethodString =  payment.details.substringAfter("con ")
+        val paymentMethod = if(paymentMethodString == PaymentMethods.Cash.method) PaymentMethods.Cash else PaymentMethods.MoneyTransfer
+        _paymentAmount.value = payment.amount
+        _paymentMethod.value = paymentMethod
+        _showAddPaymentDialog.value = true
+    }
+
+    fun clearDebtDataAndTransactionDataToModify() {
+        _transactionDataToModification.value = null
+        _debtAmount.value = ""
+        _debtDetails.value = ""
+        _showAddDebtDialog.value = false
+        _isEditableDebt.value = false
+    }
+
+    fun clearPaymentDataAndTransactionDataToModify() {
+        _transactionDataToModification.value = null
+        _paymentAmount.value = ""
+        _paymentMethod.value = null
+        _showAddPaymentDialog.value = false
+        _isEditablePayment.value = false
+    }
+
+    fun modifyDebtOnDataLayer() {
+        val transaction = _transactionDataToModification.value?.copy(amount = debtAmount.value, details = debtDetails.value)
+        viewModelScope.launch(Dispatchers.IO) {
+            updateTransaction(transaction!!)
+        }
+
+    }
+
+    fun modifyPaymentOnDataLayer() {
+        val transaction = _transactionDataToModification.value?.copy(amount = paymentAmount.value, details = "Pago realizado con ${_paymentMethod.value?.method}")
+        viewModelScope.launch(Dispatchers.IO) {
+            updateTransaction(transaction!!)
+        }
+    }
+
+    fun deleteTransaction() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _transactionDataToModification.value?.let { deleteTransaction(it) }
+        }
+    }
 }

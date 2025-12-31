@@ -1,5 +1,6 @@
 package com.danucdev.stocksystem.domain
 
+import com.danucdev.stocksystem.data.entities.TransactionEntity
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.ConcessionModel
 import com.danucdev.stocksystem.domain.models.CurrentAccountModel

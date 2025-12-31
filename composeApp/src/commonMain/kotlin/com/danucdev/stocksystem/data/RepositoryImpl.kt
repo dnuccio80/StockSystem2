@@ -1,6 +1,7 @@
 package com.danucdev.stocksystem.data
 
 import com.danucdev.stocksystem.data.db.StockSystemDatabase
+import com.danucdev.stocksystem.data.entities.TransactionEntity
 import com.danucdev.stocksystem.domain.Repository
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.ConcessionModel
