@@ -11,6 +11,7 @@ import com.danucdev.stocksystem.domain.usecases.concessions.UpdateConcession
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -101,6 +102,7 @@ class ConcessionsViewModel(
     }
 
     fun cleanAllData() {
+        _concessionId.value = 0
         _articleName.value = ""
         _price.value = ""
         _manageStock.value = false
@@ -141,9 +143,12 @@ class ConcessionsViewModel(
         }
     }
 
-    fun deleteConcessionById(concessionId: Int) {
+    fun deleteConcessionById() {
         viewModelScope.launch(Dispatchers.IO) {
-            deleteConcession(concessionId)
+            async {
+                deleteConcession(_concessionId.value)
+            }.await()
+            cleanAllData()
         }
     }
 

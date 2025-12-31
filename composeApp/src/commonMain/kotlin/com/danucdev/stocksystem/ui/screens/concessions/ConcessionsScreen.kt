@@ -41,6 +41,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.onPointerEvent
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -103,7 +106,7 @@ class ConcessionsScreen : Screen {
                         concessionsList.forEach { concession ->
                             ConcessionItem(
                                 concession,
-                                onDelete = { viewmodel.deleteConcessionById(concession.id) },
+                                onDelete = { viewmodel.deleteConcessionById() },
                                 onModify = {
                                     viewmodel.assignConcessionData(concession)
                                     viewmodel.updateShowEditArticleDialog()
@@ -150,6 +153,8 @@ class ConcessionsScreen : Screen {
                                 viewmodel.cleanAllData()
                                 viewmodel.updateShowAddArticleDialog()
                             }
+
+                            ConcessionActions.DELETE_ARTICLE -> {}
                         }
                     }
                 )
@@ -190,6 +195,11 @@ class ConcessionsScreen : Screen {
                                 viewmodel.cleanAllData()
                                 viewmodel.updateShowEditArticleDialog()
                             }
+
+                            ConcessionActions.DELETE_ARTICLE -> {
+                                viewmodel.updateShowEditArticleDialog()
+                                viewmodel.deleteConcessionById()
+                            }
                         }
                     }
                 )
@@ -205,7 +215,12 @@ private fun ConcessionItem(article: ConcessionModel, onDelete: () -> Unit, onMod
     var showConfirmDeleteClientDialog by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 64.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 64.dp)
+            .clickable {
+                onModify()
+            }.pointerHoverIcon(PointerIcon.Hand),
         shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(
             containerColor = CardBackgroundSecond
@@ -217,31 +232,7 @@ private fun ConcessionItem(article: ConcessionModel, onDelete: () -> Unit, onMod
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             CardBody(article.name)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                CardBody("price: $${article.price}")
-                Button(
-                    shape = CircleShape,
-                    onClick = { onModify() },
-                    modifier = Modifier.size(35.dp),
-                    contentPadding = PaddingValues(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkMenuBackground)
-                ) {
-                    Icon(Icons.Filled.Edit, contentDescription = "", tint = DarkFontColor)
-                }
-                Button(
-                    shape = CircleShape,
-                    onClick = { showConfirmDeleteClientDialog = true },
-                    modifier = Modifier.size(35.dp),
-                    contentPadding = PaddingValues(8.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = DarkMenuBackground)
-                ) {
-                    Icon(Icons.Filled.Delete, contentDescription = "", tint = DarkFontColor)
-                }
-            }
-
+            CardBody("Precio: $${article.price}")
         }
         if (showConfirmDeleteClientDialog) {
             ConfirmDialog(
@@ -258,7 +249,7 @@ private fun ConcessionItem(article: ConcessionModel, onDelete: () -> Unit, onMod
 
 
 enum class ConcessionActions {
-    CHANGE_NAME, CHANGE_PRICE, MANAGE_STOCK, CHANGE_CURRENT_STOCK, CHANGE_ADVICE_STOCK, QUESTION_CLICKED, ON_DISMISS, ADD_ARTICLE
+    CHANGE_NAME, CHANGE_PRICE, MANAGE_STOCK, CHANGE_CURRENT_STOCK, CHANGE_ADVICE_STOCK, QUESTION_CLICKED, ON_DISMISS, ADD_ARTICLE, DELETE_ARTICLE
 }
 
 @Composable
@@ -275,6 +266,7 @@ fun ConcessionDialog(
 ) {
 
     var showError by remember { mutableStateOf(false) }
+    var showConfirmDeleteClientDialog by remember { mutableStateOf(false) }
 
     val focusRequester = remember { FocusRequester() }
 
@@ -333,7 +325,7 @@ fun ConcessionDialog(
                         onCheckedChange = { onActionDone(ConcessionActions.MANAGE_STOCK, "") })
                     CardBody("Gestionar stock")
                 }
-                androidx.compose.animation.AnimatedVisibility(manageStock) {
+                AnimatedVisibility(manageStock) {
                     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                         TextFieldItem(currentStock, label = "Stock actual", onClick = {}) { input ->
                             if (input.isBlank()) {
@@ -375,7 +367,7 @@ fun ConcessionDialog(
                                             })
                                 }
                             }
-                            androidx.compose.animation.AnimatedVisibility(questionClicked) {
+                            AnimatedVisibility(questionClicked) {
                                 CardBody("Se mostrará un mensaje de alerta de poco stock en el panel principal y en el panel de inventario cuando la cantidad de articulos sea igual o menor que el número que insertes en aviso de pocas existencias.\nSi no queres el aviso, coloca 0 (cero).")
                             }
                         }
@@ -383,26 +375,81 @@ fun ConcessionDialog(
                     }
                 }
                 Spacer(modifier = Modifier.size(0.dp))
-                Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    AcceptDeclineButtons(
-                        acceptButtonColor = Color.Green.copy(alpha = .6f),
-                        onAcceptButtonClick = {
-                            if (isAllData) {
-                                showError = false
-                                onActionDone(ConcessionActions.ADD_ARTICLE, "")
-                            } else {
-                                showError = true
+                if (isEditedArticle) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            ButtonTextItem(
+                                "Eliminar artículo",
+                                color = Color.Red
+                            ) { showConfirmDeleteClientDialog = true }
+                            AcceptDeclineButtons(
+                                acceptButtonColor = Color.Green.copy(alpha = .6f),
+                                onAcceptButtonClick = {
+                                    if (isAllData) {
+                                        showError = false
+                                        onActionDone(ConcessionActions.ADD_ARTICLE, "")
+                                    } else {
+                                        showError = true
+                                    }
+                                },
+                                onDeclineButtonClick = {
+                                    onActionDone(
+                                        ConcessionActions.ON_DISMISS,
+                                        ""
+                                    )
+                                }
+                            )
+                        }
+
+                    }
+                    AnimatedVisibility(visible = showError) {
+                        Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        AcceptDeclineButtons(
+                            acceptButtonColor = Color.Green.copy(alpha = .6f),
+                            onAcceptButtonClick = {
+                                if (isAllData) {
+                                    showError = false
+                                    onActionDone(ConcessionActions.ADD_ARTICLE, "")
+                                } else {
+                                    showError = true
+                                }
+                            },
+                            onDeclineButtonClick = {
+                                onActionDone(
+                                    ConcessionActions.ON_DISMISS,
+                                    ""
+                                )
                             }
-                        },
-                        onDeclineButtonClick = { onActionDone(ConcessionActions.ON_DISMISS, "") }
-                    )
+                        )
+                    }
+                    AnimatedVisibility(visible = showError) {
+                        Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
+                    }
                 }
-                AnimatedVisibility(visible = showError) {
-                    Text("Faltan rellenar datos", color = Color.Red, fontSize = 12.sp)
-                }
+
+            }
+            if (showConfirmDeleteClientDialog) {
+                ConfirmDialog(
+                    "¿Seguro que deseas eliminar este producto?",
+                    onConfirm = {
+                        showConfirmDeleteClientDialog = false
+                        onActionDone(ConcessionActions.DELETE_ARTICLE, "")
+                    },
+                    onDismiss = { showConfirmDeleteClientDialog = false }
+                )
             }
         }
     }
