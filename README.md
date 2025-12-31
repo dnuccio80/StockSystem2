@@ -1,3 +1,54 @@
+Desktop Accounting App (Kotlin Multiplatform)
+
+This project is a Desktop application built with Kotlin Multiplatform and Jetpack Compose for Desktop, focused on managing clients, current accounts (accounts receivable), transactions and balances.
+
+It follows modern reactive patterns using StateFlow, clean architecture principles, and Voyager for navigation.
+
+🧱 Tech Stack
+
+Kotlin Multiplatform (JVM / Desktop)
+
+Jetpack Compose for Desktop
+
+Voyager – Navigation
+
+Room – Local database
+
+Koin – Dependency Injection
+
+Coroutines & StateFlow – Reactive state management
+
+Material 3
+
+
+* Navigation *
+
+Navigation is handled using Voyager.
+
+A sidebar menu is used instead of a back button
+
+Each menu item represents a top-level screen
+
+To avoid stacking the same screen multiple times, navigation uses:
+
+screen comparison (navigator.lastItem)
+
+or replace() instead of push()
+
+🧠 Architecture Overview
+
+The app follows a layered approach:
+
+UI (Compose)
+│
+├── ViewModel (StateFlow)
+│
+├── UseCases
+│
+└── Repository
+    └── Room (DAO + Entities)
+
+
 This is a Kotlin Multiplatform project targeting Desktop (JVM).
 
 * [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
