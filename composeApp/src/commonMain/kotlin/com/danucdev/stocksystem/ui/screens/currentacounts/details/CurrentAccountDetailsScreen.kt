@@ -120,12 +120,13 @@ class CurrentAccountDetailsScreen(clientId: Int) : Screen {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        ButtonTextItem("Añadir deuda") { viewmodel.modifyShowAddDebtDialog(true) }
+                        ButtonTextItem("Registrar deuda") { viewmodel.modifyShowAddDebtDialog(true) }
                         ButtonTextItem("Realizar un pago") {
                             viewmodel.modifyShowAddPaymentDialog(
                                 true
                             )
                         }
+                        ButtonTextItem("Enviar Recordatorio de pago") { /* Desarrollar un helper para enviar whatsapp */}
                         ButtonTextItem("Limpiar todo el registro", color = NegativeColor) {
                             viewmodel.modifyShowConfirmDialog(
                                 true

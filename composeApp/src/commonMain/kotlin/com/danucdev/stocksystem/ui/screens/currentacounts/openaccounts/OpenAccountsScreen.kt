@@ -264,7 +264,7 @@ private fun AddCurrentAccountDialog(
                     )
                 }
                 if (isAlreadyCurrentAccount != null) {
-                    androidx.compose.animation.AnimatedVisibility(isAlreadyCurrentAccount) {
+                    AnimatedVisibility(isAlreadyCurrentAccount) {
                         Text(
                             "Ya existe una cuenta corriente de este cliente",
                             color = NegativeColor,

@@ -7,6 +7,7 @@ import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import com.danucdev.stocksystem.data.dao.ClientDao
 import com.danucdev.stocksystem.data.dao.ConcessionDao
+import com.danucdev.stocksystem.data.dao.CourtDao
 import com.danucdev.stocksystem.data.dao.CurrentAccountDao
 import com.danucdev.stocksystem.data.dao.TransactionDao
 import com.danucdev.stocksystem.data.entities.ClientEntity
@@ -20,7 +21,7 @@ const val DATABASE_NAME = "ss_app_database.db" // Siempre con .db
 
 expect object StockSystemCTor : RoomDatabaseConstructor<StockSystemDatabase>
 
-@Database(entities = [ClientEntity::class, ConcessionEntity::class, CurrentAccountEntity::class, TransactionEntity::class], version = 7)
+@Database(entities = [ClientEntity::class, ConcessionEntity::class, CurrentAccountEntity::class, TransactionEntity::class], version = 9)
 @ConstructedBy(StockSystemCTor::class)
 @TypeConverters(LocalDateTypeConverter::class)
 abstract class StockSystemDatabase:RoomDatabase() {
@@ -28,5 +29,6 @@ abstract class StockSystemDatabase:RoomDatabase() {
     abstract fun concessionDao():ConcessionDao
     abstract fun currentAccountDao():CurrentAccountDao
     abstract fun transactionDao():TransactionDao
+    abstract fun courtDao():CourtDao
 }
 

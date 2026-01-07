@@ -5,6 +5,7 @@ import com.danucdev.stocksystem.data.entities.TransactionEntity
 import com.danucdev.stocksystem.domain.Repository
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.ConcessionModel
+import com.danucdev.stocksystem.domain.models.CourtModel
 import com.danucdev.stocksystem.domain.models.CurrentAccountModel
 import com.danucdev.stocksystem.domain.models.TransactionModel
 import kotlinx.coroutines.flow.Flow
@@ -122,6 +123,18 @@ class RepositoryImpl(private val db: StockSystemDatabase) : Repository {
 
     override suspend fun deleteAllTransactionsByClientId(clientId: Int) {
         db.transactionDao().deleteTransactionsByClientId(clientId)
+    }
+
+    override fun getAllCourts(): Flow<List<CourtModel>> {
+        return db.courtDao().getAllCourts().map { list -> list.map { court -> court.toDomain() } }
+    }
+
+    override suspend fun addNewCourt(court: CourtModel) {
+        db.courtDao().addNewCourt(court.toEntity())
+    }
+
+    override suspend fun deleteCourt(courtId: Int) {
+        db.courtDao().deleteCourt(courtId)
     }
 
 }

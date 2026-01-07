@@ -3,6 +3,7 @@ package com.danucdev.stocksystem.domain
 import com.danucdev.stocksystem.data.entities.TransactionEntity
 import com.danucdev.stocksystem.domain.models.ClientModel
 import com.danucdev.stocksystem.domain.models.ConcessionModel
+import com.danucdev.stocksystem.domain.models.CourtModel
 import com.danucdev.stocksystem.domain.models.CurrentAccountModel
 import com.danucdev.stocksystem.domain.models.TransactionModel
 import kotlinx.coroutines.flow.Flow
@@ -37,5 +38,10 @@ interface Repository {
     suspend fun deleteTransaction(transaction: TransactionModel)
     suspend fun updateTransaction(transaction: TransactionModel)
     suspend fun deleteAllTransactionsByClientId(clientId: Int)
+
+    // Courts
+    fun getAllCourts():Flow<List<CourtModel>>
+    suspend fun addNewCourt(court:CourtModel)
+    suspend fun deleteCourt(courtId:Int)
 
 }
